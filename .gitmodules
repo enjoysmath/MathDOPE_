@@ -1,0 +1,6 @@
+[submodule "quiver"]
+	path = quiver
+	url = https://github.com/enjoysmath/quiver.git
+[submodule "abstract_spacecraft/static/quiver"]
+	path = abstract_spacecraft/static/quiver
+	url = https://github.com/enjoysmath/quiver.git

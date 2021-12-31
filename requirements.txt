@@ -1,0 +1,11 @@
+django
+gunicorn
+django-heroku
+requests
+neomodel
+django-neomodel
+dj-database-url
+whitenoise
+bidict
+django-bootstrap5
+

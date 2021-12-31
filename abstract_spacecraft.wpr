@@ -1,0 +1,52 @@
+#!wing
+#!version=7.0
+##################################################################
+# Wing project file                                              #
+##################################################################
+[project attributes]
+debug.launch-configs = (2,
+                        {'launch-Arh8d2aucZ6vnXr0': ({'shared': True},
+        {'buildcmd': ('project',
+                      None),
+         'env': ('custom',
+                 [u'FLASK_APP=flask_app.py']),
+         'name': 'Launch Flask App',
+         'pyexec': ('project',
+                    u''),
+         'pypath': ('project',
+                    []),
+         'pyrunargs': ('project',
+                       ''),
+         'runargs': u'',
+         'rundir': ('project',
+                    u'')}),
+                         'launch-Sr8mHOqWbVpw7pLo': ({},
+        {'buildcmd': ('project',
+                      ('',
+                       '')),
+         'env': ('project',
+                 []),
+         'name': u'Django runserver',
+         'pyexec': ('project',
+                    ''),
+         'pypath': ('project',
+                    []),
+         'pyrunargs': ('project',
+                       '-u'),
+         'runargs': 'runserver 8000',
+         'rundir': ('project',
+                    '')})})
+proj.debug-sub-processes = True
+proj.directory-list = [{'dirloc': loc('.'),
+                        'excludes': (),
+                        'filter': '*',
+                        'include_hidden': False,
+                        'recursive': True,
+                        'watch_for_changes': True}]
+proj.file-type = 'shared'
+proj.launch-config = {loc('manage.py'): ('custom',
+        (u'',
+         'launch-Sr8mHOqWbVpw7pLo'))}
+proj.main-file = loc('manage.py')
+testing.test-framework = {None: ':internal djangotest',
+                          loc('manage.py'): ':internal djangotest'}
