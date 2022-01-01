@@ -1,5 +1,7 @@
 # Abstract Spacecraft #
 
+![Got diagram saved to Neo4j database.](screenshots/got_diagram_saved_to_db.png)
+
 Abstract Spacecraft is a responsive web application for editing commutative diagrams using the well-known __[Quiver CD Editor](http://q.uiver.app)__.
 
 Here is Quiver's repository: https://github.com/varkor/quiver
