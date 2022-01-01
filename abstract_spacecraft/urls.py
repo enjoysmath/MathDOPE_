@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', include('database.urls')),
     path('', include('accounts.urls')),
     path('', include('cd_editor.urls')),
     path('accounts/', include('django.contrib.auth.urls')),

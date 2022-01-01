@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, HttpResponse
 from .models import Object, Category, Diagram, get_model_by_uid, get_model_class, get_unique
 from django.contrib.auth.decorators import login_required, user_passes_test
-from accounts.permissions import is_editor
+#from accounts.permissions import is_editor
 from abstract_spacecraft.http_tools import get_posted_text
 from django.http import JsonResponse
 from abstract_spacecraft.python_tools import full_qualname
@@ -10,11 +10,46 @@ from django.db import OperationalError
 from django.core.exceptions import ObjectDoesNotExist
 from abstract_spacecraft.settings import DEBUG
 from neomodel.properties import StringProperty
+from .forms import CreateDiagramForm
 
-# Create your views here.
+@login_required
+def create_diagram(request):
+    if request.method == 'POST':
+        form = CreateDiagramForm(request.POST)
+        if form.is_valid():
+            diagram_name = form.cleaned_data.get('diagram_name')            
+            diagram = Diagram.nodes.get_or_none(name=diagram_name)
+            
+            if diagram is None:
+                diagram = Diagram.our_create(
+                    name=diagram_name, checked_out_by=request.user.username)
+                return redirect('cd_editor', diagram_name)
+            else:
+                error_msg = 'A diagram by that name already exists'
+                return render('create_diagram.html', {'error_msg': error_msg, 'form': form})
+        else:
+            form = CreateDiagramForm()
+            return render('create_diagram', {'form': form})
+                
+            
+
+def get_model_by_uid(Model, uid:str):
+    if len(uid) > 36:
+        raise ValueError('That id is longer than a UUID4 is supposed to be.')
+    
+    if isinstance(Model, str):
+        Model = get_model_class(Model)
+        
+    model = Model.nodes.get_or_none(uid=uid)    
+    
+    if model is None:
+        raise ObjectDoesNotExist(f'An instance of the model {Model} with uid "{uid}" does not exist.')
+    
+    return model
+                        
 
 @login_required   
-@user_passes_test(is_editor)
+#@user_passes_test(is_editor)
 def set_model_string(request, Model:str, field:str):
     try:                        
         old_id = request.POST['pk']
@@ -48,7 +83,7 @@ def set_model_string(request, Model:str, field:str):
 
 
 @login_required   
-@user_passes_test(is_editor)
+#@user_passes_test(is_editor)
 def set_diagram_category(request):
     try:                        
         diagram = get_model_by_uid(Diagram, uid=request.POST['pk'])
@@ -118,10 +153,6 @@ def load_diagram_from_database(request, diagram_id):
                 
     except Exception as e:
         return redirect('error', f'{full_qualname(e)}: {str(e)}')
-
-@login_required
-def new_diagram(request):
-    
 
 @login_required   
 def save_diagram(request, diagram_id):

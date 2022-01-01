@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm, UsernameField
 from django import forms
+from django.forms import Form, TextInput
 
 
 class UserLoginForm(AuthenticationForm):
@@ -15,3 +16,11 @@ class UserLoginForm(AuthenticationForm):
             'id': 'hi',
         }
     ))
+    
+#class TextSearchForm(Form):
+    #def __init__(self, *args, **kwargs):
+        #super(Form, self).__init__(*args, **kwargs)
+
+    #search_input = TextInput(
+        #attrs={'class': 'form-control', 'placeholder': 'Text Search'})
+    
