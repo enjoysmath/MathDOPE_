@@ -41,5 +41,6 @@ And I'd like people to work with me on this code before forking it, which is mai
 ### Videos of current state of the project ###
 _(Most recent are listed first)_
 
-* 
+1. [Got CD saved to DB](https://youtu.be/lp1dGmL8qQk)
 
+2. (Coming soon!)
