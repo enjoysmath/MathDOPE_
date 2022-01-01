@@ -1,5 +1,9 @@
 from .settings import MAX_TEXT_LENGTH
+from django.shortcuts import render, HttpResponse
+import json
 
+def render_error(request, error_msg):
+    return render(request, 'error_page.html', {'error_msg': error_msg})
 
 def get_posted_text(request, key=None, max_len=MAX_TEXT_LENGTH):
     if request.method != 'POST':
@@ -40,4 +44,10 @@ def get_model_id(request, edit_mode):
     edit_id = request.session[edit_mode]
     
     return edit_id
-        
+
+
+# `data` is a python dictionary
+def render_to_json(request, data):
+    return HttpResponse(
+        json.dumps(data, ensure_ascii=False),
+        mimetype=request.is_ajax() and "application/json" or "text/html")

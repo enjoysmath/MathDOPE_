@@ -37,7 +37,8 @@ DEBUG = True    # TODO comment out
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
-    'abstract-spacecraft.herokuapp.com'
+    'abstract-spacecraft.herokuapp.com',
+    '54d88e04.databases.neo4j.io',
 ]
 
 # Application definition
@@ -54,6 +55,7 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'cd_editor.apps.CdEditorConfig',
     'database.apps.DatabaseConfig',
+    'django_neomodel',
 ]
 
 MIDDLEWARE = [
@@ -74,8 +76,10 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [TEMPLATES_PATH, 
+                 os.path.join(TEMPLATES_PATH, 'abstract_spacecraft'),
                  os.path.join(TEMPLATES_PATH, 'accounts'),
-                 os.path.join(TEMPLATES_PATH, 'cd_editor')],
+                 os.path.join(TEMPLATES_PATH, 'cd_editor'),
+                 os.path.join(TEMPLATES_PATH, 'database')],
         'APP_DIRS': True,
         'OPTIONS': {
             'debug': True,
@@ -180,5 +184,7 @@ X_FRAME_OPTIONS = 'ALLOW'   # ie set this to "DENY"
 MAX_TEXT_LENGTH = 80
 MAX_USERNAME_LENGTH = 50
 MAX_PASSWORD_LENGTH = 50
-
 MAX_USER_EDIT_DIAGRAMS = 8
+MAX_BAD_CONN_RETRIES = 5
+
+#MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

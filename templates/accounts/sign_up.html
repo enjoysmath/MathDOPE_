@@ -4,9 +4,6 @@
 <html>
  <head>
   <meta charset="utf-8"/>
-  <script type="text/javascript">
-
-  </script>
   <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport"/>
   <title>
    Home - Brand
@@ -16,22 +13,35 @@
   <link href="https://fonts.googleapis.com/css?family=Indie+Flower&amp;display=swap" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" rel="stylesheet"/>
+  <link href='{% static "css\abstract_spacecraft\navbar_buttons.css" %}' rel="stylesheet"/>
+  <link href='{% static "css\accounts\user_home_tabs.css" %}' rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet"/>
  </head>
  <body>
-  <nav class="navbar navbar-light navbar-expand bg-light navigation-clean">
+  <nav class="navbar navbar-light navbar-expand-lg navigation-clean-button" style="/*position: absolute;*/width: 100%;height: auto;max-height: auto;padding: 0px;">
    <div class="container">
-    <a class="navbar-brand" href="#" style="font-size: xx-large;font-family: 'Indie Flower', serif;color: var(--bs-indigo);">
-     <strong>
-      Abstract Spacecraft
-     </strong>
+    <a class="navbar-brand bounce animated" href="/" style="font-family: 'Indie Flower', serif;color: var(--bs-indigo);font-size: xx-large;font-weight: bold;margin: 0px;padding: 0px;">
+     Abstract Spacecraft
     </a>
-    <button class="navbar-toggler" data-bs-target="#navcol-1" data-bs-toggle="collapse">
+    <button class="navbar-toggler" data-bs-target="#navcol-1" data-bs-toggle="collapse" style="transform: scale(0.74);">
+     <span class="visually-hidden">
+      Toggle navigation
+     </span>
+     <span class="navbar-toggler-icon">
+     </span>
     </button>
     <div class="collapse navbar-collapse" id="navcol-1">
-     <a class="btn btn-primary ms-auto" href="sign-in" role="button" style="border-radius: 10px;">
-      Sign In
-     </a>
+     <ul class="navbar-nav me-auto">
+      <li class="nav-item">
+      </li>
+      <li class="nav-item">
+      </li>
+     </ul>
+     <div class="btn-group" role="group" style="margin: 4px;border-radius: 10px;">
+      <a class="btn btn-primary" href="/accounts/sign-in" id="sign-in-button" role="button" style="padding: 3px 6px;border-radius: 8px;">
+       Sign In
+      </a>
+     </div>
     </div>
    </div>
   </nav>
@@ -40,14 +50,10 @@
     Mathematicians can edit, save, and search for diagrams using this web app.
    </h1>
    <div class="col-xl-9 mx-auto position-relative" style="height: 110px;transform: translateY(-122px);">
-    <button class="btn btn-primary" data-bs-target="#sign-up-modal" data-bs-toggle="modal" style="font-size: 24pt;border-radius: 16px;" type="button">
-     Sign me up!
+    <button class="btn btn-primary" data-bs-target="#sign-up-modal" data-bs-toggle="modal" style="font-size: 18pt;border-radius: 16px;" type="button">
+     Sign Me Up!
      <br/>
     </button>
-   </div>
-   <div class="row" style="height: 457px;">
-    <div class="col">
-    </div>
    </div>
   </header>
   <section class="text-center bg-light features-icons">
@@ -279,18 +285,18 @@
       </button>
      </div>
      <div class="modal-body">
-      {% include "sign_up_form.html" %}
+      {% include "accounts/sign_up_form.html" %}
      </div>
     </div>
    </div>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js">
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
   </script>
   <script src='{% static "js\bs-init.js" %}'>
   </script>
-  <script src='{% static "js\cd_editor\connect_quiver_gui.js" %}'>
+  <script src='{% static "js\_javascript_tools.js" %}'>
   </script>
  </body>
 </html>

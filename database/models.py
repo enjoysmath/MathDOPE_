@@ -15,6 +15,28 @@ class Model:
     @staticmethod
     def our_create(**kwargs):
         raise NotImplementedError
+
+
+#class Diagram(StructuredNode, Model):  
+    #"""
+    #Models should be decouple (inheritance rarely used)
+    #Otherwise basic seeming queries return all types in the hierarchy.
+    #Hence just StructuredNode here.
+    #"""
+    #uid = UniqueIdProperty()
+    #name = StringProperty(max_length=MAX_TEXT_LENGTH, required=True)
+    #objects = RelationshipTo('Object', 'CONTAINS')    
+    #category = RelationshipTo('Category', 'IN_CATEGORY', cardinality=One)
+    #COMMUTES = { 'C' : 'Commutes', 'NC' : 'Noncommutative' }
+    #commutes = StringProperty(choices=COMMUTES, default='C')
+    #checked_out_by = StringProperty(max_length=MAX_TEXT_LENGTH)
+
+#class Proof(Object):
+    ## one to many proof steps, which are ordered by their proof_index member
+
+#class MathRelationship(StructuredRel):
+    #template = StringProperty(max_length=MAX_TEXT_LENGTH)
+    #proof = RelationshipTo('Proof', 'HAS_PROOF', cardinality=OneOrMore)
     
     
 class Morphism(StructuredRel):
@@ -282,7 +304,6 @@ class Diagram(StructuredNode, Model):
     Otherwise basic seeming queries return all types in the hierarchy.
     Hence just StructuredNode here.
     """
-    uid = UniqueIdProperty()
     name = StringProperty(max_length=MAX_TEXT_LENGTH, required=True)
     objects = RelationshipTo('Object', 'CONTAINS')    
     category = RelationshipTo('Category', 'IN_CATEGORY', cardinality=One)
@@ -376,7 +397,7 @@ class Diagram(StructuredNode, Model):
     
     def all_objects(self):
         results, meta = db.cypher_query(
-            f'MATCH (D:Diagram)-[:CONTAINS]->(x:Object) WHERE D.uid="{self.uid}" RETURN x')
+            f'MATCH (D:Diagram)-[:CONTAINS]->(x:Object) WHERE D.name="{self.name}" RETURN x')
         return [Object.inflate(row[0]) for row in results]
         
     def delete_objects(self):
@@ -390,11 +411,11 @@ class Diagram(StructuredNode, Model):
         self.save()
         
     @staticmethod
-    def get_paths_by_length(diagram_id):
+    def get_paths_by_length(diagram_name):
         paths_by_length = \
             f"MATCH (D:Diagram)-[:CONTAINS]->(X:Object), " + \
             f"p=(X)-[:MAPS_TO*]->(:Object) " + \
-            f"WHERE D.uid = '{diagram_id}' " + \
+            f"WHERE D.name = '{diagram_name}' " + \
             f"RETURN p " + \
             f"ORDER BY length(p) DESC" 
         
@@ -612,6 +633,21 @@ def get_model_class(Model:str):
     
     Model = model_str_to_class[Model]    
     return Model
+
+
+def get_model_by_name(Model, name:str):
+    if len(name) > MAX_TEXT_LENGTH:
+        raise ValueError(f'That {Model} name is longer than {MAX_TEXT_LENGTH} characters.')
+    
+    if isinstance(Model, str):
+        Model = get_model_class(Model)
+        
+    model = Model.nodes.get_or_none(name=name)
+    
+    if model is None:
+        raise ObjectDoesNotExist(f'An instance of the model {Model} with uid "{uid}" does not exist.')
+    
+    return model
 
 
 def get_model_by_uid(Model, uid:str):

@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import cd_editor
+from .views import diagram_editor
 #from database.views import save_diagram
 
 urlpatterns = [
-    path('cd-editor', cd_editor, name='cd_editor'),
+    path('<str:diagram_name>', diagram_editor, name='diagram_editor'),
 ]

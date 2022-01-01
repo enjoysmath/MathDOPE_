@@ -1,51 +1,58 @@
 from django.shortcuts import render, redirect, HttpResponse
-from .models import Object, Category, Diagram, get_model_by_uid, get_model_class, get_unique
+from .models import Object, Category, Diagram, get_model_by_name, get_model_class, get_unique
 from django.contrib.auth.decorators import login_required, user_passes_test
 #from accounts.permissions import is_editor
 from abstract_spacecraft.http_tools import get_posted_text
 from django.http import JsonResponse
-from abstract_spacecraft.python_tools import full_qualname
+from abstract_spacecraft.python_tools import full_qualname, call_with_retry
 import json
 from django.db import OperationalError
 from django.core.exceptions import ObjectDoesNotExist
-from abstract_spacecraft.settings import DEBUG
+from abstract_spacecraft.settings import DEBUG, MAX_TEXT_LENGTH
 from neomodel.properties import StringProperty
-from .forms import CreateDiagramForm
+from django.contrib import messages
 
 @login_required
 def create_diagram(request):
     if request.method == 'POST':
-        form = CreateDiagramForm(request.POST)
-        if form.is_valid():
-            diagram_name = form.cleaned_data.get('diagram_name')            
-            diagram = Diagram.nodes.get_or_none(name=diagram_name)
+        diagram_name = request.POST.get('diagram-name-input')
+
+        if 0 < len(diagram_name) <= MAX_TEXT_LENGTH:               
+            diagram = call_with_retry(Diagram.nodes.get_or_none, name=diagram_name)
             
             if diagram is None:
                 diagram = Diagram.our_create(
                     name=diagram_name, checked_out_by=request.user.username)
-                return redirect('cd_editor', diagram_name)
-            else:
-                error_msg = 'A diagram by that name already exists'
-                return render('create_diagram.html', {'error_msg': error_msg, 'form': form})
-        else:
-            form = CreateDiagramForm()
-            return render('create_diagram', {'form': form})
                 
+                return redirect('diagram_editor', diagram_name)
+            else:
+                error_msg = 'A diagram by that name already exists.'
+        else:
+            if len(diagram_name) == 0:
+                error_msg = 'A diagram name must be non-empty.'
+            elif len(diagram_name) > MAX_TEXT_LENGTH:
+                error_msg = 'A diagram name can be no longer than 80 characters.'
+    else:
+        # A GET request
+        error_msg = ''
+        
+    messages.error(request, error_msg)
+    return render(request, 'create_diagram.html')                
             
 
-def get_model_by_uid(Model, uid:str):
-    if len(uid) > 36:
-        raise ValueError('That id is longer than a UUID4 is supposed to be.')
+#def get_model_by_uid(Model, uid:str):
+    #if len(uid) > 36:
+        #raise ValueError('That id is longer than a UUID4 is supposed to be.')
     
-    if isinstance(Model, str):
-        Model = get_model_class(Model)
+    #if isinstance(Model, str):
+        #Model = get_model_class(Model)
         
-    model = Model.nodes.get_or_none(uid=uid)    
+    #model = Model.nodes.get_or_none(uid=uid)    
     
-    if model is None:
-        raise ObjectDoesNotExist(f'An instance of the model {Model} with uid "{uid}" does not exist.')
+    #if model is None:
+        #raise ObjectDoesNotExist(f'An instance of the model {Model} with uid "{uid}" does not exist.')
     
-    return model
+    #return model
                         
 
 @login_required   
@@ -155,20 +162,20 @@ def load_diagram_from_database(request, diagram_id):
         return redirect('error', f'{full_qualname(e)}: {str(e)}')
 
 @login_required   
-def save_diagram(request, diagram_id):
+def save_diagram(request, diagram_name):
     try:
         if request.method != 'POST': #or not request.headers.get("contentType", "application/json; charset=utf-8"):
             raise OperationalError('You can only use the POST method to save to the database.')            
         user = request.user.username
         
-        diagram = get_model_by_uid(Diagram, uid=diagram_id)
+        diagram = get_model_by_name(Diagram, diagram_name)
 
         if diagram is None:
-            raise ObjectDoesNotExist(f'There exists no diagram with uid "{diagram_id}".') 
+            raise ObjectDoesNotExist(f'There exists no diagram in the database with name "{diagram_name}" to save to.') 
         
         if diagram.checked_out_by != user:
             raise OperationalError(
-                f'The diagram with id "{diagram_id}" is already checked out by {diagram.checked_out_by}')                
+                f'The diagram with name "{diagram_name}" is already checked out by {diagram.checked_out_by}')                
                        
         body = request.body.decode('utf-8')
         
@@ -183,14 +190,18 @@ def save_diagram(request, diagram_id):
         
         diagram.delete_objects()
         diagram.load_from_editor(data)        
-                                            
+
+        messages.success(request, "Saved diagram to the database! 🤩")
+        
         return JsonResponse(
             'Wrote the following data to the database:\n' + str(data), safe=False)
 
     except Exception as e:
         #if DEBUG:
             #raise e
-        return JsonResponse({'error_msg' : f'{full_qualname(e)}: {str(e)}'})
+        error_msg = f'{full_qualname(e)}: {str(e)}'
+        messages.error(request, error_msg)
+        return JsonResponse({'error_msg' : error_msg})
     
     #except Exception as e:
         #return JsonResponse({'success': False, 'error_msg': f'{full_qualname(e)}: {e}'}) 

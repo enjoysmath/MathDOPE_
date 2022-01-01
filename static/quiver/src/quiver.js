@@ -1177,7 +1177,8 @@ QuiverImportExport.database = new class extends QuiverImportExport {
             // No need to have an encoding of an empty quiver;
             // we'll just use the URL directly.
             return {
-                data: URL_prefix,
+                data : JSON.stringify([0,0]),
+                url_data: URL_prefix,
                 metadata: {},
             };
         }

@@ -1,4 +1,4 @@
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -31,6 +31,10 @@ def sign_in(request):
         form = UserLoginForm()
     return render(request, 'sign_in.html', {'form': form})
 
+@login_required
+def sign_out(request):
+    logout(request)
+    return redirect('/')
 
 @login_required
 def user_home(request):

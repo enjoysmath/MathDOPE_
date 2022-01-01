@@ -1,4 +1,12 @@
+from .settings import MAX_BAD_CONN_RETRIES
 
+def call_with_retry(func, *args, **kwargs):
+    tries = 0
+    while tries < MAX_BAD_CONN_RETRIES:
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            tries += 1
 
 def full_qualname(o):
     module = o.__class__.__module__

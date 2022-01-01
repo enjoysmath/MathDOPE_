@@ -2632,6 +2632,10 @@ class UI {
     
     // data: `${URL_prefix}?q=${btoa(unescape(encodeURIComponent(JSON.stringify(output))))}`,
     
+    load_json_from_database(json_data) {
+        QuiverImportExport.database.import(this, json_data);    
+    }
+    
     save_diagram_action() {
         const { data, url_data } = ui.quiver.export(
             "database",
@@ -2641,26 +2645,35 @@ class UI {
         );
         
         // `url_data` is the new URL.
-        history.pushState({}, "", url_data);
+        history.pushState({}, "", url_data);    
         
-        fetch(parent.save_cd_url, 
+        //console.log(parent.save_diagram_url);        
+        this.save_diagram_to_database(data);   
+    }
+    
+    save_diagram_to_database(json_data) 
+    {
+        fetch(parent.save_diagram_url, 
         {
             headers: {
-            'X-CSRFToken': "{{ csrf_token }}",
+            'X-CSRFToken': parent.csrf_token,
             "x-Requested-With": "XMLHttpRequest",
             "Content-Type": "application/json; charset=utf-8",
         },
         method: 'POST',
-        body: data,
+        body: json_data,
         mode: 'same-origin',
         })
         .then(response => response.json())
-        .then(data => {
-            alert("Success: " + JSON.stringify(data));
-        })
-        .catch(error => {
-            alert(error);
-            console.error('Error: ' + error);
+        //.then(data => {
+            //alert("Success: " + JSON.stringify(data));
+        //})
+        //.catch(error => {
+            ////alert(error);
+            ////console.error('Error: ' + error);
+        //})
+        .then(() => {
+            parent.display_django_messages();   
         });
     }
     
