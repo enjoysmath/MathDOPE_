@@ -13,9 +13,9 @@
   <link href="https://fonts.googleapis.com/css?family=Indie+Flower&amp;display=swap" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" rel="stylesheet"/>
-  <link href='{% static "css\abstract_spacecraft\navbar_buttons.css" %}' rel="stylesheet"/>
   <link href='{% static "css\accounts\user_home_tabs.css" %}' rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet"/>
+  <link href='{% static "css\navbar.css" %}' rel="stylesheet"/>
  </head>
  <body>
   <div id="django-messages-div">
@@ -23,7 +23,7 @@
   </div>
   <nav class="navbar navbar-light navbar-expand-lg navigation-clean-button" style="/*position: absolute;*/width: 100%;height: auto;max-height: auto;padding: 0px;">
    <div class="container">
-    <a class="navbar-brand" data-bss-hover-animate="rubberBand" href="/" style="font-family: 'Indie Flower', serif;color: var(--bs-indigo);font-size: xx-large;font-weight: bold;margin: 0px;padding: 0px;">
+    <a class="navbar-brand" data-bss-hover-animate="rubberBand" href="/" style="color: var(--bs-indigo);">
      Abstract Spacecraft
     </a>
     <button class="navbar-toggler" data-bs-target="#navcol-2" data-bs-toggle="collapse" style="transform: scale(0.74);">
@@ -36,21 +36,36 @@
     <div class="collapse navbar-collapse" id="navcol-2" style="margin-bottom: 0px;">
      <ul class="navbar-nav me-auto">
       <li class="nav-item">
+       <a class="btn btn-primary" href="/accounts/sign-out" id="sign-out-button-2" role="button" style="max-height: auto;">
+        Sign Out
+       </a>
       </li>
       <li class="nav-item">
+       <a class="btn btn-primary" href="/accounts/sign-out" id="sign-out-button-2" role="button" style="max-height: auto;">
+        Sign Out
+       </a>
+      </li>
+      <li class="nav-item">
+       <a class="btn btn-primary" href="/accounts/sign-out" id="sign-out-button-5" role="button" style="max-height: auto;">
+        Sign Out
+       </a>
+      </li>
+      <li class="nav-item">
+       <a class="btn btn-primary" href="/accounts/sign-out" id="sign-out-button-4" role="button" style="max-height: auto;">
+        Sign Out
+       </a>
+      </li>
+      <li class="nav-item">
+       <a class="btn btn-primary" href="/accounts/sign-out" id="sign-out-button-3" role="button" style="max-height: auto;">
+        Sign Out
+       </a>
+      </li>
+      <li class="nav-item">
+       <a class="btn btn-primary" href="/accounts/sign-out" id="sign-out-button-1" role="button" style="max-height: auto;">
+        Sign Out
+       </a>
       </li>
      </ul>
-     <div class="btn-group" role="group" style="margin: 4px;border-radius: 10px;">
-      <button class="btn btn-primary" id="centre-view-button" style="border-radius: 8px;margin-top: 5px;margin-bottom: 5px;" type="button">
-       Center
-      </button>
-      <button class="btn btn-primary" id="save-button" style="border-radius: 8px;margin-top: 5px;margin-bottom: 5px;" type="button">
-       Save
-      </button>
-      <a class="btn btn-primary" href="/accounts/sign-out" id="sign-out-button-1" role="button" style="border-radius: 8px;margin-top: 5px;margin-bottom: 5px;">
-       Sign Out
-      </a>
-     </div>
     </div>
    </div>
   </nav>
