@@ -11,7 +11,10 @@
   <link href='{% static "bootstrap\css\bootstrap.min.css" %}' rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css?family=Indie+Flower&amp;display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" rel="stylesheet"/>
   <link href='{% static "css\accounts\user_home_tabs.css" %}' rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet"/>
   <link href='{% static "css\navbar.css" %}' rel="stylesheet"/>
  </head>
  <body>
@@ -52,6 +55,31 @@
         Delete
        </button>
       </li>
+      <li class="nav-item text-center d-grid float-none d-lg-flex justify-content-lg-end align-items-lg-center">
+       <div class="nav-item dropdown show">
+        <a aria-expanded="true" class="active d-xl-flex align-items-xl-center btn btn-primary" data-bs-toggle="dropdown" href="#">
+         Select
+        </a>
+        <div class="dropdown-menu dropdown-menu-dark show dropdown-menu-end">
+         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
+          <div class="btn-group-vertical" role="group">
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+          </div>
+         </a>
+        </div>
+       </div>
+      </li>
       <li class="nav-item d-lg-flex justify-content-lg-end align-items-lg-center">
        <div class="nav-item dropdown">
         <a aria-expanded="false" class="active d-xl-flex align-items-xl-center btn btn-primary" data-bs-toggle="dropdown" href="#">
@@ -59,34 +87,20 @@
         </a>
         <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
          <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          All
-         </a>
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Deselect
-         </a>
-        </div>
-       </div>
-      </li>
-      <li class="nav-item d-lg-flex justify-content-lg-end align-items-lg-center">
-       <div class="nav-item dropdown show">
-        <a aria-expanded="true" class="active d-xl-flex align-items-xl-center btn btn-primary" data-bs-toggle="dropdown" href="#">
-         View
-        </a>
-        <div class="dropdown-menu dropdown-menu-dark show dropdown-menu-end" id="view-dropdown-menu" style="top: -50px;">
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Center
-         </a>
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Zoom Out
-         </a>
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Zoom In
-         </a>
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Reset Zoom
-         </a>
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Grid
+          <div class="btn-group-vertical" role="group">
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+          </div>
          </a>
         </div>
        </div>
@@ -94,26 +108,24 @@
       <li class="nav-item d-lg-flex justify-content-lg-end align-items-lg-center">
        <div class="nav-item dropdown">
         <a aria-expanded="false" class="active d-xl-flex align-items-xl-center btn btn-primary" data-bs-toggle="dropdown" href="#">
-         More
+         Select
         </a>
-        <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end" id="more-dropdown-menu">
+        <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
          <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Export
-         </a>
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Grid
-         </a>
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Shortcuts
-         </a>
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          About
-         </a>
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Show Queue
-         </a>
-         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          Show Hints
+          <div class="btn-group-vertical" role="group">
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+           <button class="btn btn-primary" type="button">
+            Button
+           </button>
+          </div>
          </a>
         </div>
        </div>
@@ -126,6 +138,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js">
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
+  </script>
+  <script src='{% static "js\bs-init.js" %}'>
   </script>
   <script src='{% static "js\_javascript_tools.js" %}'>
   </script>

@@ -1,7 +1,5 @@
 {% load static %}
 {% load django_bootstrap5 %}
-{% load static %}
-{% load django_bootstrap5 %}
 <!DOCTYPE html>
 <html>
  <head>
@@ -10,14 +8,14 @@
   <title>
    Home - Brand
   </title>
-  <link href='{% static "css\bootstrap.min.css" %}" %}' rel="stylesheet"/>
+  <link href='{% static "bootstrap\css\bootstrap.min.css" %}' rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css?family=Indie+Flower&amp;display=swap" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" rel="stylesheet"/>
-  <link href='{% static "accounts\user_home_tabs.css" %}" %}' rel="stylesheet"/>
+  <link href='{% static "css\accounts\user_home_tabs.css" %}' rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet"/>
-  <link href='{% static "navbar.css" %}" %}' rel="stylesheet"/>
+  <link href='{% static "css\navbar.css" %}' rel="stylesheet"/>
  </head>
  <body>
   <nav class="navbar navbar-light navbar-expand-lg navigation-clean-button" style="/*position: absolute;*/width: 100%;height: auto;max-height: auto;padding: 0px;">
@@ -47,7 +45,7 @@
     </div>
    </div>
   </nav>
-  <header class="text-center text-white masthead" style='background: url({% static "accounts\pillars_of_creation.jpg" %}" %}) center / cover repeat;height: 679px;'>
+  <header class="text-center text-white masthead" style='background: url({% static "img\accounts\pillars_of_creation.jpg" %}) center / cover repeat;height: 679px;'>
    <h1 class="mb-5" style="transform: translate(0px) translateX(0px) translateY(-122px);">
     Mathematicians can edit, save, and search for diagrams using this web app.
    </h1>
@@ -179,7 +177,7 @@
     </div>
    </div>
   </section>
-  <section class="text-center text-white call-to-action" style='background:url({% static "accounts\bg-masthead.jpg" %}" %}) no-repeat center center;background-size:cover;'>
+  <section class="text-center text-white call-to-action" style='background:url({% static "img\accounts\bg-masthead.jpg" %}) no-repeat center center;background-size:cover;'>
    <div class="overlay">
    </div>
    <div class="container">
@@ -296,10 +294,9 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
   </script>
-  <script src='{% static "bs-init.js" %}" %}'>
+  <script src='{% static "js\bs-init.js" %}'>
   </script>
-  <script src='{% static "_javascript_tools.js" %}" %}'>
+  <script src='{% static "js\_javascript_tools.js" %}'>
   </script>
  </body>
 </html>
-
