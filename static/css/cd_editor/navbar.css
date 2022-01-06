@@ -42,21 +42,18 @@
 
 .dropdown-menu.dropdown-menu-dark.show {
   float: left;
-  background-color: var(--bs-blue);
-  color: var(--bs-white);
   border-radius: 8px;
   margin: 0px 5px 0px 0px;
-  font-size: smaller;
-  border-radius: 8px;
   min-width: auto;
-  text-align: left;
   margin-top: 3px;
   margin-right: 3px;
+  background: rgba(0,123,255,0.71);
+  border-radius: 8px;
+  /*box-shadow: 0px 0px 5px var(--bs-blue);*/
 }
 
 @media (min-width: 992px) {
   .dropdown-menu.dropdown-menu-dark.show {
-    background-color: var(--bs-blue);
     color: var(--bs-white);
     border-radius: 11px;
     margin-top: 5px;
@@ -66,18 +63,14 @@
   }
 }
 
-@media (min-width: 992px) {
-  .active.d-xl-flex.align-items-xl-center.btn.btn-primary {
-    background-color: var(--bs-blue);
-    color: var(--bs-white);
-    border-radius: 11px;
-  }
+.active.d-xl-flex.align-items-xl-center.btn.btn-primary {
+  background-color: rgb(0,123,255);
+  color: var(--bs-white);
+  border-radius: 11px;
 }
 
 @media (max-width: 991px) {
   .active.d-xl-flex.align-items-xl-center.btn.btn-primary {
-    background-color: var(--bs-blue);
-    color: var(--bs-white);
     border-radius: 8px;
     font-size: smaller;
     padding: 3px;
@@ -127,5 +120,41 @@
 
 .navbar-toggler {
   pointer-events: auto;
+}
+
+.form-check.form-switch {
+  margin: 10px;
+}
+
+.form-switch .form-check-input:checked {
+  background-color: rgb(0,71,255);
+}
+
+.form-check-input {
+  border: none;
+}
+
+.form-check-input:checked {
+  border: none;
+}
+
+.dropdown-menu .btn {
+  border-radius: 11px;
+}
+
+.btn-group-vertical {
+  background-color: transparent;
+  box-shadow: 0px 0px 5px var(--bs-blue);
+  border-radius: 11px;
+}
+
+.dropdown-item.d-lg-flex.justify-content-lg-end {
+  background: transparent;
+}
+
+.dropdown-item .btn-primary {
+  color: #fff;
+  background-color: rgba(0,123,255,0.76);
+  border-color: #007bff;
 }
 

@@ -60,13 +60,13 @@
         <a aria-expanded="false" class="active d-xl-flex align-items-xl-center btn btn-primary" data-bs-toggle="dropdown" href="#">
          Select
         </a>
-        <div class="dropdown-menu dropdown-menu-dark dropdown-menu-start" id="select-dropdown-menu">
+        <div class="dropdown-menu dropdown-menu-dark dropdown-menu-start" id="select-dropdown-menu" style="background: transparent;border-style: none;">
          <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          <div class="btn-group-vertical" role="group">
+          <div class="btn-group-vertical" role="group" style="border-style: none;">
            <button class="btn btn-primary" id="select-all-button" type="button">
-            All
+            Select All
            </button>
-           <button class="btn btn-primary" id="deselect-all-button" type="button">
+           <button class="btn btn-primary" id="deselect-all-button-1" type="button">
             Deselect
            </button>
           </div>
@@ -131,21 +131,13 @@
         </a>
         <div class="dropdown-menu dropdown-menu-dark dropdown-menu-start" id="math-dropdown-menu">
          <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
-          <div class="btn-group-vertical" role="group">
-           <button class="btn btn-primary" type="button">
-            Button
-           </button>
-           <button class="btn btn-primary" type="button">
-            Button
-           </button>
-           <button class="btn btn-primary" type="button">
-            Button
-           </button>
-           <button class="btn btn-primary" type="button">
-            Button
-           </button>
-          </div>
          </a>
+         <div class="form-check form-switch form-switch">
+          <input class="form-check-input" id="written-language-switch" role="switch" type="checkbox"/>
+          <label class="form-check-label text-nowrap" for="written-language-switch">
+           English Output
+          </label>
+         </div>
         </div>
        </div>
       </li>
