@@ -2650,7 +2650,7 @@ class UI {
         //console.log(parent.save_diagram_url);        
         this.save_diagram_to_database(data);   
     }
-    
+       
     save_diagram_to_database(json_data) 
     {
         fetch(parent.save_diagram_url, 
@@ -2675,6 +2675,17 @@ class UI {
         .then(() => {
             parent.display_django_messages();   
         });
+    }
+    
+    select_all_action() {
+        this.select(...this.quiver.all_cells());
+    }
+    
+    deselect_all_action() {
+        this.deselect();
+        this.panel.hide(this);
+        this.panel.label_input.parent.class_list.add("hidden");
+        this.colour_picker.close();
     }
     
     /// Centre the view with respect to the selection, or the entire quiver if no cells are
@@ -5558,20 +5569,13 @@ class Toolbar {
         add_action(
             "Select all",
             [{ key: "A", modifier: true, context: Shortcuts.SHORTCUT_PRIORITY.Defer }],
-            () => {
-                ui.select(...ui.quiver.all_cells());
-            },
+            ui.select_all_action,
         );
 
         add_action(
             "Deselect all",
             [{ key: "A", modifier: true, shift: true, context: Shortcuts.SHORTCUT_PRIORITY.Defer }],
-            () => {
-                ui.deselect();
-                ui.panel.hide(ui);
-                ui.panel.label_input.parent.class_list.add("hidden");
-                ui.colour_picker.close();
-            },
+            ui.deselect_all_action,
         );
 
         add_action(

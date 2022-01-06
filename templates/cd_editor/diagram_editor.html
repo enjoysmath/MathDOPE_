@@ -14,8 +14,8 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" rel="stylesheet"/>
   <link href='{% static "css\accounts\user_home_tabs.css" %}' rel="stylesheet"/>
+  <link href='{% static "css\cd_editor\navbar.css" %}' rel="stylesheet"/>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet"/>
-  <link href='{% static "css\navbar.css" %}' rel="stylesheet"/>
  </head>
  <body>
   <div id="django-messages-div">
@@ -56,11 +56,30 @@
        </button>
       </li>
       <li class="nav-item text-center d-grid float-none d-lg-flex justify-content-lg-end align-items-lg-center">
-       <div class="nav-item dropdown show">
-        <a aria-expanded="true" class="active d-xl-flex align-items-xl-center btn btn-primary" data-bs-toggle="dropdown" href="#">
+       <div class="nav-item dropdown">
+        <a aria-expanded="false" class="active d-xl-flex align-items-xl-center btn btn-primary" data-bs-toggle="dropdown" href="#">
          Select
         </a>
-        <div class="dropdown-menu dropdown-menu-dark show dropdown-menu-end">
+        <div class="dropdown-menu dropdown-menu-dark dropdown-menu-start" id="select-dropdown-menu">
+         <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
+          <div class="btn-group-vertical" role="group">
+           <button class="btn btn-primary" id="select-all-button" type="button">
+            All
+           </button>
+           <button class="btn btn-primary" id="deselect-all-button" type="button">
+            Deselect
+           </button>
+          </div>
+         </a>
+        </div>
+       </div>
+      </li>
+      <li class="nav-item text-center d-grid float-none d-lg-flex justify-content-lg-end align-items-lg-center">
+       <div class="nav-item dropdown">
+        <a aria-expanded="false" class="active d-xl-flex align-items-xl-center btn btn-primary" data-bs-toggle="dropdown" href="#">
+         View
+        </a>
+        <div class="dropdown-menu dropdown-menu-dark dropdown-menu-start" id="view-dropdown-menu">
          <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
           <div class="btn-group-vertical" role="group">
            <button class="btn btn-primary" type="button">
@@ -80,12 +99,12 @@
         </div>
        </div>
       </li>
-      <li class="nav-item d-lg-flex justify-content-lg-end align-items-lg-center">
+      <li class="nav-item text-center d-grid float-none d-lg-flex justify-content-lg-end align-items-lg-center">
        <div class="nav-item dropdown">
         <a aria-expanded="false" class="active d-xl-flex align-items-xl-center btn btn-primary" data-bs-toggle="dropdown" href="#">
-         Select
+         More
         </a>
-        <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+        <div class="dropdown-menu dropdown-menu-dark dropdown-menu-start">
          <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
           <div class="btn-group-vertical" role="group">
            <button class="btn btn-primary" type="button">
@@ -105,12 +124,12 @@
         </div>
        </div>
       </li>
-      <li class="nav-item d-lg-flex justify-content-lg-end align-items-lg-center">
+      <li class="nav-item text-center d-grid float-none d-lg-flex justify-content-lg-end align-items-lg-center">
        <div class="nav-item dropdown">
         <a aria-expanded="false" class="active d-xl-flex align-items-xl-center btn btn-primary" data-bs-toggle="dropdown" href="#">
-         Select
+         Math
         </a>
-        <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+        <div class="dropdown-menu dropdown-menu-dark dropdown-menu-start" id="math-dropdown-menu">
          <a class="dropdown-item d-lg-flex justify-content-lg-end" href="#">
           <div class="btn-group-vertical" role="group">
            <button class="btn btn-primary" type="button">
