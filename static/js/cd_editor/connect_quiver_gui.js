@@ -13,5 +13,18 @@ $(document).ready(() => {
     $('#deselect-all-button').on('click', () => {
         cd_editor_window.ui.deselect_all_action();
     });
+    $('#delete-button').on('click', () => {
+        cd_editor_window.ui.delete_action();
+    });
+    $('#undo-button').on('click', () => {
+        cd_editor_window.ui.undo_action();
+    });
+    $('#redo-button').on('click', () => {
+        cd_editor_window.ui.redo_action();
+    }); 
+      
+    $(window).on('load', () => {
+        cd_editor_window.ui.load_diagram_action();    
+    });    
 });
-    
+

@@ -2633,7 +2633,31 @@ class UI {
     // data: `${URL_prefix}?q=${btoa(unescape(encodeURIComponent(JSON.stringify(output))))}`,
     
     load_json_from_database(json_data) {
-        QuiverImportExport.database.import(this, json_data);    
+        QuiverImportExport.database.import(ui, json_data);    
+    }
+
+    load_diagram_action() {
+        fetch(parent.load_diagram_url, 
+        {
+            headers: {
+                'Accept': 'application/json; charset=utf8',
+                'X-Requested-With': 'XMLHttpRequest',   //Necessary to work with request.is_ajax()
+            }
+        })
+        .then(response => response.text())
+        .then(data => {
+            ui.load_json_from_database(data);
+        })
+        // .then(text => {
+        //     alert(text);
+        // });        
+        .catch(error => {
+            // alert(error);
+            console.error('Error: ' + error);
+        })
+        .then(() => {
+            parent.display_django_messages();   
+        });        
     }
     
     save_diagram_action() {
@@ -2648,7 +2672,7 @@ class UI {
         history.pushState({}, "", url_data);    
         
         //console.log(parent.save_diagram_url);        
-        this.save_diagram_to_database(data);   
+        ui.save_diagram_to_database(data);   
     }
        
     save_diagram_to_database(json_data) 
@@ -2664,7 +2688,7 @@ class UI {
         body: json_data,
         mode: 'same-origin',
         })
-        .then(response => response.json())
+        // .then(response => response.json())
         //.then(data => {
             //alert("Success: " + JSON.stringify(data));
         //})
@@ -2678,14 +2702,30 @@ class UI {
     }
     
     select_all_action() {
-        this.select(...this.quiver.all_cells());
+        ui.select(...ui.quiver.all_cells());
     }
     
     deselect_all_action() {
-        this.deselect();
-        this.panel.hide(this);
-        this.panel.label_input.parent.class_list.add("hidden");
-        this.colour_picker.close();
+        ui.deselect();
+        ui.panel.hide(ui);
+        ui.panel.label_input.parent.class_list.add("hidden");
+        ui.colour_picker.close();
+    }
+    
+    delete_action() {
+        ui.history.add(ui, [{
+            kind: "delete",
+            cells: ui.quiver.transitive_dependencies(ui.selection),
+        }], true);
+        ui.panel.update(ui);
+    }
+    
+    undo_action() {
+        ui.history.undo(ui);
+    }
+    
+    redo_action() {
+        ui.history.redo(this);
     }
     
     /// Centre the view with respect to the selection, or the entire quiver if no cells are
@@ -5553,28 +5593,24 @@ class Toolbar {
         add_action(
             "Undo",
             [{ key: "Z", modifier: true, context: Shortcuts.SHORTCUT_PRIORITY.Defer }],
-            () => {
-                ui.history.undo(ui);
-            },
+            ui.undo_action,
         );
 
         add_action(
             "Redo",
             [{ key: "Z", modifier: true, shift: true, context: Shortcuts.SHORTCUT_PRIORITY.Defer }],
-            () => {
-                ui.history.redo(ui);
-            },
+            ui.redo_action,
         );
 
         add_action(
             "Select all",
-            [{ key: "A", modifier: true, context: Shortcuts.SHORTCUT_PRIORITY.Defer }],
+            [{ key: "A", modifier: true, ctrl: true, context: Shortcuts.SHORTCUT_PRIORITY.Defer }],
             ui.select_all_action,
         );
 
         add_action(
             "Deselect all",
-            [{ key: "A", modifier: true, shift: true, context: Shortcuts.SHORTCUT_PRIORITY.Defer }],
+            [{ key: "A", modifier: true, shift: true, ctrl: true, context: Shortcuts.SHORTCUT_PRIORITY.Defer }],
             ui.deselect_all_action,
         );
 
@@ -5584,13 +5620,7 @@ class Toolbar {
                 { key: "Backspace" },
                 { key: "Delete" },
             ],
-            () => {
-                ui.history.add(ui, [{
-                    kind: "delete",
-                    cells: ui.quiver.transitive_dependencies(ui.selection),
-                }], true);
-                ui.panel.update(ui);
-            },
+            ui.delete_action,
         );
 
         add_action(

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from .models import Object, Category, Diagram, get_model_by_name, get_model_class, get_unique
 from django.contrib.auth.decorators import login_required, user_passes_test
 #from accounts.permissions import is_editor
-from abstract_spacecraft.http_tools import get_posted_text
+from abstract_spacecraft.http_tools import get_posted_text, render_error
 from django.http import JsonResponse
 from abstract_spacecraft.python_tools import full_qualname, call_with_retry
 import json
@@ -11,6 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from abstract_spacecraft.settings import DEBUG, MAX_TEXT_LENGTH
 from neomodel.properties import StringProperty
 from django.contrib import messages
+
 
 @login_required
 def create_diagram(request):
@@ -148,18 +149,36 @@ def list_all_diagrams(request):
     except Exception as e:
         return redirect('error', f'{full_qualname(e)}: {str(e)}')
         
-
-
-def load_diagram_from_database(request, diagram_id):
+        
+@login_required
+def load_diagram(request, diagram_name:str):
     try:
         if request.method == 'GET':
-            diagram = get_model_by_uid(Diagram, uid=diagram_id)
-            json_str = json.dumps(diagram.quiver_format())
+            user = request.user.username
             
-            return HttpResponse(json_str, content_type='text/plain; charset=utf8')
+            diagram = get_model_by_name(Diagram, diagram_name)
+            
+            if diagram.checked_out_by != user:
+                raise OperationalError(
+                    f'The diagram with name "{diagram_name}" is already checked out by {diagram.checked_out_by}')                
+                        
+            data = diagram.quiver_format()
+            
+            messages.success(request, "Loaded diagram from the database! ✨")
+            return JsonResponse(data, safe=False)            
+            
+            #return render(request, 'diagram_editor.html', context)
+        else:
+            raise OperationalError('You can only use the GET method to load from the database.') 
                 
     except Exception as e:
-        return redirect('error', f'{full_qualname(e)}: {str(e)}')
+        #if __debug__:
+            #raise e
+        error_msg = f'{full_qualname(e)}: {str(e)}'
+        messages.error(request, error_msg)
+        return JsonResponse({'error_msg' : error_msg})
+        #return render_error(request, excep=e)
+
 
 @login_required   
 def save_diagram(request, diagram_name):
@@ -170,9 +189,6 @@ def save_diagram(request, diagram_name):
         
         diagram = get_model_by_name(Diagram, diagram_name)
 
-        if diagram is None:
-            raise ObjectDoesNotExist(f'There exists no diagram in the database with name "{diagram_name}" to save to.') 
-        
         if diagram.checked_out_by != user:
             raise OperationalError(
                 f'The diagram with name "{diagram_name}" is already checked out by {diagram.checked_out_by}')                
@@ -197,8 +213,8 @@ def save_diagram(request, diagram_name):
             'Wrote the following data to the database:\n' + str(data), safe=False)
 
     except Exception as e:
-        #if DEBUG:
-            #raise e
+        if __debug__:
+            raise e
         error_msg = f'{full_qualname(e)}: {str(e)}'
         messages.error(request, error_msg)
         return JsonResponse({'error_msg' : error_msg})

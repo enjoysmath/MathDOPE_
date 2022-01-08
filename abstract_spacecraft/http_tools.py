@@ -1,9 +1,25 @@
 from .settings import MAX_TEXT_LENGTH
 from django.shortcuts import render, HttpResponse
+from django.contrib import messages
+from abstract_spacecraft.python_tools import full_qualname
 import json
 
-def render_error(request, error_msg):
+
+def render_error(request, error_msg=None, excep=None):
+    if error_msg is None:
+        error_msg = ''
+    
+    if excep is not None:
+        if __debug__:
+            raise excep 
+        
+        error_msg += '\n'
+        error_msg += f'{full_qualname(e)}: {str(e)}'
+    
+    messages.error(request, error_msg)
+    
     return render(request, 'error_page.html', {'error_msg': error_msg})
+
 
 def get_posted_text(request, key=None, max_len=MAX_TEXT_LENGTH):
     if request.method != 'POST':

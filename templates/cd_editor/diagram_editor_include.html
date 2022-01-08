@@ -5,15 +5,10 @@
     style="height:83vh;width:100%;border:none;overflow:hidden;">
 </iframe>
     
-{% if diagram_json %}
-    <script type="text/javascript">
-        var save_diagram_url = "{% url 'save_diagram' diagram_name %}";
-        var csrf_token = "{{ csrf_token }}";
-        var messages_url = "{% url 'messages' %}";
-        var clear_messages_url = "{% url 'clear_messages' %}";
-        
-        document.addEventListener("load", () => {
-            cd_editor_window.ui.load_json_from_database("{{ diagram_json }}");
-        });
-    </script>
-{% endif %}
+<script type="text/javascript">
+    var save_diagram_url = "{% url 'save_diagram' diagram_name %}";
+    var load_diagram_url = "{% url 'load_diagram' diagram_name %}";
+    var csrf_token = "{{ csrf_token }}";
+    var messages_url = "{% url 'messages' %}";
+    var clear_messages_url = "{% url 'clear_messages' %}";
+</script>

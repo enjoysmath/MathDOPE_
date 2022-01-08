@@ -22,5 +22,20 @@ TO DO  (Not sorted by priority)
 	
 2. Validator for URL-valid chars in Diagram name (1-2 days).
 
-3. 
+3. Math options:
+		epimorphism
+		monomorphism
+		general
+		that auto-apply styles.  Store the state in JS until user clicks Save.
+		
+4. Exact Rows / Columns / Diagonals (also Differential Rows / Columns / Diagonals) for abelian categories.
+
+(DONE) 5. Debug integration of old load code.
+
+6. Refactor model code to handle arrow-to-arrow connection types.  We can do this transparently for all types using Neomodel
+   StructuredNode's for arrows having source / target be Relations.
+	 
+7. Arrow option GUI stuff with a gear or pencil button.
+
+
 
