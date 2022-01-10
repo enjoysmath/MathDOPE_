@@ -37,8 +37,7 @@ else:
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
-    'abstract-spacecraft.herokuapp.com',
-    '54d88e04.databases.neo4j.io',
+    'abstract-spacecraft.herokuapp.com/',
 ]
 
 # Application definition
@@ -66,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'abstract_spacecraft.urls'
@@ -149,10 +149,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = (
-  os.path.join(SITE_ROOT, 'static/'),
-)
+  os.path.join(SITE_ROOT, 'static/'),)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 def neo4j_url():
     url = os.environ.get('NEO4J_SCHEMA', 'bolt') + "://"
@@ -174,9 +174,6 @@ config.MAX_POOL_SIZE = 50  # TODO: what does this affect?
 #LOGIN_REDIRECT_URL = 'home'
 #LOGOUT_REDIRECT_URL = 'home'
 
-# Activate Django-Heroku.
-django_heroku.settings(locals())
-
 # TODO: Enable Click-jacking protection
 X_FRAME_OPTIONS = 'ALLOW'   # ie set this to "DENY"
 # https://docs.djangoproject.com/en/1.11/ref/clickjacking/
@@ -186,5 +183,8 @@ MAX_USERNAME_LENGTH = 50
 MAX_PASSWORD_LENGTH = 50
 MAX_USER_EDIT_DIAGRAMS = 8
 MAX_BAD_CONN_RETRIES = 5
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
 
 #MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
