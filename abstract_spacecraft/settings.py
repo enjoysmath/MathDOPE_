@@ -99,7 +99,8 @@ WSGI_APPLICATION = 'abstract_spacecraft.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if os.environ.get('ON_HEROKU', '0') == '0':
+# TODO: try out PostgreSQL in production, i.e. change True to the commented out code;
+if True:   # os.environ.get('ON_HEROKU', '0') == '0':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
