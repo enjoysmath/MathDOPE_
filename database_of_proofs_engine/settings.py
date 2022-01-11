@@ -16,6 +16,7 @@ import django_heroku
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = Path(__file__).resolve().parent.parent
 SITE_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
@@ -33,7 +34,7 @@ else:
     DEBUG = False
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True    # TODO comment out
+DEBUG = False    # TODO comment out
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -149,11 +150,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-  os.path.join(SITE_ROOT, 'static/'),)
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_DIRS = (os.path.join(SITE_ROOT, 'static/'),)
 
 def neo4j_url():
     url = os.environ.get('NEO4J_SCHEMA', 'bolt') + "://"
