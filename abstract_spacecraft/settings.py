@@ -38,7 +38,7 @@ else:
 ALLOWED_HOSTS = [
     #'dc166c4c.databases.neo4j.io',
     'abstract-spacecraft.herokuapp.com',
-    '127.0.0.1',
+    'localhost',
 ]
 
 # Application definition
