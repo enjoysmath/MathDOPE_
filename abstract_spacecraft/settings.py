@@ -211,16 +211,19 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'mysite.log',
             'formatter': 'verbose'
-        },
+        },        
+        'console': {
+            'class': 'logging.StreamHandler',
+        },        
     },
     'loggers': {
         'django': {
-            'handlers':['file'],
+            'handlers':['console'],
             'propagate': True,
             'level':'DEBUG',
         },
         'MYAPP': {
-            'handlers': ['file'],
+            'handlers': ['console'],
             'level': 'DEBUG',
         },
     }
