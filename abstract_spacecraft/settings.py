@@ -36,9 +36,9 @@ else:
 #DEBUG = True    # TODO comment out
 
 ALLOWED_HOSTS = [
-    '127.0.0.1',
+    'dc166c4c.databases.neo4j.io',
     'abstract-spacecraft.herokuapp.com',
-    'dc166c4c.databases.neo4j.io'
+    '127.0.0.1',
 ]
 
 # Application definition
