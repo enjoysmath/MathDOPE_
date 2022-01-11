@@ -38,7 +38,7 @@ else:
 ALLOWED_HOSTS = [
     #'dc166c4c.databases.neo4j.io',
     'abstract-spacecraft.herokuapp.com',
-    #'127.0.0.1',
+    '127.0.0.1',
 ]
 
 # Application definition
@@ -188,20 +188,38 @@ MAX_BAD_CONN_RETRIES = 5
 
 #MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+# settings.py
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'mysite.log',
+            'formatter': 'verbose'
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
-             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+            'handlers':['file'],
+            'propagate': True,
+            'level':'DEBUG',
         },
-    },
+        'MYAPP': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+    }
 }
 
 # Activate Django-Heroku.
