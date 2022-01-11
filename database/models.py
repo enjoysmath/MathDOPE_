@@ -1,4 +1,4 @@
-from neomodel import *
+from neomodel import StructuredNode, StructuredRel
 #from django_neomodel import DjangoNode
 #from django.db import models
 from database_of_proofs_engine.settings import MAX_TEXT_LENGTH
@@ -37,11 +37,14 @@ class Model:
 #class MathRelationship(StructuredRel):
     #template = StringProperty(max_length=MAX_TEXT_LENGTH)
     #proof = RelationshipTo('Proof', 'HAS_PROOF', cardinality=OneOrMore)
-    
-    
-class Morphism(StructuredRel):
+       
+class QuiverEditorArrow(StructuredNode):
+    """
+    A base class, not meant to be used directly.
+    """
     #uid = StringProperty(default=Morphism.get_unique_id())
-    name = StringProperty(max_length=MAX_TEXT_LENGTH)
+    notation = StringProperty(max_length=MAX_TEXT_LENGTH)
+    diagram_name = StringProperty(max_length=MAX_TEXT_LENGTH)
     diagram_index = IntegerProperty(requied=True)   # Diagram code needs to keep this updated
     
     # RE-DESIGN: TODO - these need to be independent of style and settable in an accompanying
@@ -86,7 +89,7 @@ class Morphism(StructuredRel):
     color_alph = FloatProperty(default=1.0)
     
     def copy_properties_from(self, f, nodes_memo):
-        self.name = f.name
+        self.notation = f.notation
         self.diagram_index = f.diagram_index
         self.num_lines = f.num_lines
         self.alignment = f.alignment
@@ -108,9 +111,9 @@ class Morphism(StructuredRel):
     
     def load_from_editor(self, format):         
         if len(format) > 2:
-            self.name = format[2]
+            self.notation = format[2]
         else:
-            self.name = ''   # BUGFIX: need this
+            self.notation = ''   # BUGFIX: need this
         
         if len(format) > 3:
             self.alignment = format[3]
@@ -166,7 +169,7 @@ class Morphism(StructuredRel):
         
     def quiver_format(self):
         format = [self.start_node().diagram_index, self.end_node().diagram_index]
-        format.append(self.name if self.name is not None else '')
+        format.append(self.notation if self.notation is not None else '')
         format.append(self.alignment)
         options = {
             #'colour' : [self.color_hue, self.color_sat, self.color_lum, self.color_alph],
@@ -201,7 +204,7 @@ class Morphism(StructuredRel):
 class Object(StructuredNode, Model):
     uid = UniqueIdProperty()
     name = StringProperty(max_length=MAX_TEXT_LENGTH)
-    morphisms = RelationshipTo('Object', 'MAPS_TO', model=Morphism)   
+    morphisms = RelationshipTo('Object', 'MAPS_TO', model=QuiverEditorArrow)   
         
     diagram_index = IntegerProperty(required=True)
 
@@ -222,7 +225,7 @@ class Object(StructuredNode, Model):
     def copy(self, nodes_memo, **kwargs):
         copy = Object.our_create(**kwargs, diagram_index=self.diagram_index)
         nodes_memo[copy.diagram_index] = copy
-        copy.name = self.name
+        copy.notation = self.name
         copy.x = self.x
         copy.y = self.y
         copy.color_hue = self.color_hue
@@ -248,7 +251,7 @@ class Object(StructuredNode, Model):
     def all_morphisms(self):
         results, meta = db.cypher_query(
             f'MATCH (x:Object)-[f:MAPS_TO]->(y:Object) WHERE x.uid="{self.uid}" RETURN f')
-        return [Morphism.inflate(row[0]) for row in results]
+        return [QuiverEditorArrow.inflate(row[0]) for row in results]
                     
     def delete(self):
         # Delete all the outgoing morphisms first:
@@ -448,7 +451,7 @@ class Diagram(StructuredNode, Model):
             add_query = ''
             
             for rel in path.relationships:
-                rel = Morphism.inflate(rel)
+                rel = QuiverEditorArrow.inflate(rel)
                 
                 if rel.diagram_index not in rels:
                     rels[rel.diagram_index] = rel
@@ -495,7 +498,7 @@ class Diagram(StructuredNode, Model):
             return regex   
                     
         for node in nodes.values():
-            name = node.name
+            name = node.notation
             
             if name not in template_regexes:
                 template, vars = Variable.parse_into_template(name)
@@ -503,7 +506,7 @@ class Diagram(StructuredNode, Model):
                 template_regexes[name] = (template, regex)
                 
         for rel in rels.values():
-            name = rel.name
+            name = rel.notation
             
             if name not in template_regexes:
                 template, vars = Variable.parse_into_template(name)
@@ -525,7 +528,7 @@ class Diagram(StructuredNode, Model):
     
     
 
-class NaturalMap(Morphism):
+class NaturalMap(QuiverEditorArrow):
     pass
 
 
