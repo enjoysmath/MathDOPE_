@@ -53,12 +53,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
-    'whitenoise.runserver_nostatic',
+    #'whitenoise.runserver_nostatic',
     'django_bootstrap5',
     'cd_editor.apps.CdEditorConfig',
     'database.apps.DatabaseConfig',
     'django_neomodel',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
