@@ -33,14 +33,11 @@ else:
     DEBUG = False
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True    # TODO comment out
+DEBUG = True    # TODO comment out
 
 ALLOWED_HOSTS = [
-    'dc166c4c.databases.neo4j.io',
-    'abstract-spacecraft.herokuapp.com',
-    'localhost',
-    '*',
     '127.0.0.1',
+    'abstract-spacecraft.herokuapp.com/',
 ]
 
 # Application definition
@@ -53,13 +50,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
-    #'whitenoise.runserver_nostatic',
+    'whitenoise.runserver_nostatic',
     'django_bootstrap5',
     'cd_editor.apps.CdEditorConfig',
     'database.apps.DatabaseConfig',
     'django_neomodel',
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -69,7 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'abstract_spacecraft.urls'
@@ -157,9 +153,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
   os.path.join(SITE_ROOT, 'static/'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 def neo4j_url():
     url = os.environ.get('NEO4J_SCHEMA', 'bolt') + "://"
@@ -191,44 +185,7 @@ MAX_PASSWORD_LENGTH = 50
 MAX_USER_EDIT_DIAGRAMS = 8
 MAX_BAD_CONN_RETRIES = 5
 
-#MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
-
-# settings.py
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'mysite.log',
-            'formatter': 'verbose'
-        },        
-        'console': {
-            'class': 'logging.StreamHandler',
-        },        
-    },
-    'loggers': {
-        'django': {
-            'handlers':['console'],
-            'propagate': True,
-            'level':'DEBUG',
-        },
-        'MYAPP': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-    }
-}
-
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+#MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

@@ -38,4 +38,15 @@ TO DO  (Not sorted by priority)
 7. Arrow option GUI stuff with a gear or pencil button.
 
 
-
+Free Advertising:
+---
+	LinkedIn post
+	MSE post
+	MSE Ads
+	MSE Profile (network-wide)
+	Side Projectors
+	YouTube videos
+	Neo4j forums showcase
+	Django forums showcase
+	Craigslist
+	TODO: look up how to advertise for free
