@@ -2,13 +2,13 @@ from django.shortcuts import render, redirect, HttpResponse
 from .models import Object, Category, Diagram, get_model_by_name, get_model_class, get_unique
 from django.contrib.auth.decorators import login_required, user_passes_test
 #from accounts.permissions import is_editor
-from abstract_spacecraft.http_tools import get_posted_text, render_error
+from database_of_proofs_engine.http_tools import get_posted_text, render_error
 from django.http import JsonResponse
-from abstract_spacecraft.python_tools import full_qualname, call_with_retry
+from database_of_proofs_engine.python_tools import full_qualname, call_with_retry
 import json
 from django.db import OperationalError
 from django.core.exceptions import ObjectDoesNotExist
-from abstract_spacecraft.settings import DEBUG, MAX_TEXT_LENGTH
+from database_of_proofs_engine.settings import DEBUG, MAX_TEXT_LENGTH
 from neomodel.properties import StringProperty
 from django.contrib import messages
 

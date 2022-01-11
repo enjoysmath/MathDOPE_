@@ -1,6 +1,6 @@
 {
-  "name": "Abstract Spacecraft",
-  "description": "Abstract Spacecraft web app",
+  "name": "Database Of Proofs Engine",
+  "description": "Database Of Proofs Engine web app",
   "image": "heroku/python",
   "repository": "",
   "keywords": ["python", "django" ],

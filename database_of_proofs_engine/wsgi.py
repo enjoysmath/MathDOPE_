@@ -1,5 +1,5 @@
 """
-WSGI config for abstract_spacecraft project.
+WSGI config for database_of_proofs_engine project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abstract_spacecraft.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'database_of_proofs_engine.settings')
 
 application = get_wsgi_application()

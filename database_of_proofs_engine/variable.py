@@ -1,7 +1,7 @@
 from .atomic_symbol import AtomicSymbol as Atom
 import re
 from .keyword import Keyword
-from abstract_spacecraft.neo4j_tools import escape_regex_str, neo4j_escape_regex_str
+from database_of_proofs_engine.neo4j_tools import escape_regex_str, neo4j_escape_regex_str
 
 
 class Variable:

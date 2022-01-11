@@ -1,7 +1,7 @@
 from .settings import MAX_TEXT_LENGTH
 from django.shortcuts import render, HttpResponse
 from django.contrib import messages
-from abstract_spacecraft.python_tools import full_qualname
+from database_of_proofs_engine.python_tools import full_qualname
 import json
 
 

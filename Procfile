@@ -1,1 +1,1 @@
-web: gunicorn abstract_spacecraft.wsgi
+web: gunicorn database_of_proofs_engine.wsgi

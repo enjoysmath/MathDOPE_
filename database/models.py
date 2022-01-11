@@ -1,13 +1,13 @@
 from neomodel import *
 from django_neomodel import DjangoNode
 from django.db import models
-from abstract_spacecraft.settings import MAX_TEXT_LENGTH
+from database_of_proofs_engine.settings import MAX_TEXT_LENGTH
 from django.core.exceptions import ObjectDoesNotExist
 from neomodel import db
-from abstract_spacecraft.python_tools import deep_get, deep_set
-from abstract_spacecraft.variable import Variable
-from abstract_spacecraft.keyword import Keyword
-from abstract_spacecraft.neo4j_tools import escape_regex_str, neo4j_escape_regex_str
+from database_of_proofs_engine.python_tools import deep_get, deep_set
+from database_of_proofs_engine.variable import Variable
+from database_of_proofs_engine.keyword import Keyword
+from database_of_proofs_engine.neo4j_tools import escape_regex_str, neo4j_escape_regex_str
 
 # Create your models here.
 
