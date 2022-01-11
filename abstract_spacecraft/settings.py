@@ -186,7 +186,23 @@ MAX_PASSWORD_LENGTH = 50
 MAX_USER_EDIT_DIAGRAMS = 8
 MAX_BAD_CONN_RETRIES = 5
 
+#MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+             'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+        },
+    },
+}
+
 # Activate Django-Heroku.
 django_heroku.settings(locals())
-
-#MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
