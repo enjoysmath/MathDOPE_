@@ -37,7 +37,8 @@ else:
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
-    'abstract-spacecraft.herokuapp.com/',
+    'abstract-spacecraft.herokuapp.com',
+    'dc166c4c.databases.neo4j.io'
 ]
 
 # Application definition
@@ -100,7 +101,7 @@ WSGI_APPLICATION = 'abstract_spacecraft.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 # TODO: try out PostgreSQL in production, i.e. change True to the commented out code;
-if True:   # os.environ.get('ON_HEROKU', '0') == '0':
+if os.environ.get('ON_HEROKU', '0') == '0':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
