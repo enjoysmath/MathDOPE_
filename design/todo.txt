@@ -1,7 +1,8 @@
 
-
 TO DO  (Not sorted by priority)
 -----
+
+0. Debug export script to use backslashes when it writes URLs.
 
 1. English panel output (1-2 weeks):
 	First, restates the givens and the goal (say for theorem, similar to below) in first paragraph, with no expansions, probably
@@ -35,7 +36,7 @@ TO DO  (Not sorted by priority)
 6. Refactor model code to handle arrow-to-arrow connection types.  We can do this transparently for all types using Neomodel
    StructuredNode's for arrows having source / target be Relations.
 	 
-7. Arrow option GUI stuff with a gear or pencil button.
+7. Arrow option GUI stuff with a gear or pencil button (1-2weeks)
 
 
 Free Advertising:
