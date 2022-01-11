@@ -1,13 +1,14 @@
 from neomodel import StructuredNode, StructuredRel
 #from django_neomodel import DjangoNode
 #from django.db import models
-from database_of_proofs_engine.settings import MAX_TEXT_LENGTH
 from django.core.exceptions import ObjectDoesNotExist
 from neomodel import db
 from database_of_proofs_engine.python_tools import deep_get
 from database_of_proofs_engine.variable import Variable
 from database_of_proofs_engine.keyword import Keyword
 from database_of_proofs_engine.neo4j_tools import neo4j_escape_regex_str
+from database_of_proofs_engine.settings import (MAX_TEXT_LENGTH, MAX_DIAGRAM_TEXT_LENGTH,
+                                                MAX_DIAGRAM_NAME_LENGTH)
 
 # Create your models here.
 
@@ -43,8 +44,8 @@ class QuiverEditorArrow(StructuredNode):
     A base class, not meant to be used directly.
     """
     #uid = StringProperty(default=Morphism.get_unique_id())
-    notation = StringProperty(max_length=MAX_TEXT_LENGTH)
-    diagram_name = StringProperty(max_length=MAX_TEXT_LENGTH)
+    notation = StringProperty(max_length=MAX_DIAGRAM_TEXT_LENGTH)
+    diagram_name = StringProperty(max_length=MAX_DIAGRAM_NAME_LENGTH)
     diagram_index = IntegerProperty(requied=True)   # Diagram code needs to keep this updated
     
     # RE-DESIGN: TODO - these need to be independent of style and settable in an accompanying
