@@ -8,4 +8,4 @@ dj-database-url
 whitenoise
 bidict
 django-bootstrap5
-
+psycopg2
