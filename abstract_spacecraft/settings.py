@@ -33,7 +33,7 @@ else:
     DEBUG = False
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True    # TODO comment out
+DEBUG = True    # TODO comment out
 
 ALLOWED_HOSTS = [
     'dc166c4c.databases.neo4j.io',
