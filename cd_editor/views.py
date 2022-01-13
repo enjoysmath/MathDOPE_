@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from database_of_proofs_engine.http_tools import render_error
+from sopot.http_tools import render_error
 
 @login_required
 def diagram_editor(request, diagram_name:str):

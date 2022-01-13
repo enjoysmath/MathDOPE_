@@ -17,4 +17,5 @@ def neo4j_escape_regex_str(string):
     string = string.replace('}', r'\}')
     string = string.replace('(', r'\(')
     string = string.replace(')', r'\)')
+    string = string.replace('.', r'\.')
     return string

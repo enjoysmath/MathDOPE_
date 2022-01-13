@@ -1,5 +1,5 @@
 """
-ASGI config for database_of_proofs_engine project.
+ASGI config for sopot project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'database_of_proofs_engine.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sopot.settings')
 
 application = get_asgi_application()

@@ -1,1 +1,1 @@
-web: gunicorn database_of_proofs_engine.wsgi
+web: gunicorn sopot.wsgi
