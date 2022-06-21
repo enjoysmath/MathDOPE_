@@ -1,8 +1,8 @@
-# Database Of Proofs Engine #
+# Abstract Spacecraft #
 
 ![Got diagram saved to Neo4j database.](screenshots/got_diagram_saved_to_db.png)
 
-Database Of Proofs Engine (DOPE) is a responsive web application for editing commutative diagrams using the well-known __[Quiver CD Editor](http://q.uiver.app)__.
+Abstract Spacecraft (AS) is a responsive web application for editing commutative diagrams using the well-known __[Quiver CD Editor](http://q.uiver.app)__.
 
 Here is Quiver's repository: [Quiver Source](https://github.com/varkor/quiver).
 
