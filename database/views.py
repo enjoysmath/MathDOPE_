@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse
-from .models import get_model_by_name, get_unique
+from .models import get_model_by_name, get_unique, Diagram
 from django.contrib.auth.decorators import login_required, user_passes_test
 #from accounts.permissions import is_editor
 from sopot.http_tools import get_posted_text, render_error
@@ -8,8 +8,8 @@ from sopot.python_tools import full_qualname, call_with_retry
 import json
 from django.db import OperationalError
 from django.core.exceptions import ObjectDoesNotExist
-from sopot.settings import DEBUG, MAX_DIAGRAM_NAME_LENGTH
 from neomodel.properties import StringProperty
+from sopot.settings import MAX_NAME_LENGTH
 from django.contrib import messages
 
 
@@ -17,13 +17,18 @@ from django.contrib import messages
 def create_diagram(request):
     try:
         if request.method == 'POST':
-            namespace = request.user.username
+            #namespace = request.user.username
             diagram_name = request.POST.get('diagram-name-input')
         
-            diagram_name = Diagram.validate_name(diagram_name)
+            #diagram_name = DrawnDiagram.validate_name(diagram_name)
         
-            if 0 < len(diagram_name) <= MAX_DIAGRAM_NAME_LENGTH:               
+            if 0 < len(diagram_name) <= MAX_NAME_LENGTH:               
                 diagram = call_with_retry(Diagram.nodes.get_or_none, name=diagram_name)
+            else:
+                if len(diagram_name) == 0:
+                    error_msg = 'A diagram name must be non-empty.'
+                elif len(diagram_name) > MAX_NAME_LENGTH:
+                    error_msg = f'A diagram name can be no longer than {MAX_NAME_LENGTH} characters.'                
             
             if diagram is None:
                 diagram = Diagram.our_create(
@@ -33,17 +38,15 @@ def create_diagram(request):
             else:
                 error_msg = 'A diagram by that name already exists.'
         else:
-            if len(diagram_name) == 0:
-                error_msg = 'A diagram name must be non-empty.'
-            elif len(diagram_name) > MAX_DIAGRAM_NAME_LENGTH:
-                error_msg = f'A diagram name can be no longer than {MAX_DIAGRAM_NAME_LENGTH} characters.'
-            else:
-                # A GET request
-                error_msg = ''
+            error_msg = None
+            
     except Exception as e:
-        pass
-                
-    messages.error(request, error_msg)
+        if __debug__:
+            raise e
+        
+    if error_msg:
+        messages.error(request, error_msg)
+        
     return render(request, 'create_diagram.html')                
             
 
@@ -178,12 +181,11 @@ def load_diagram(request, diagram_name:str):
             raise OperationalError('You can only use the GET method to load from the database.') 
                 
     except Exception as e:
-        #if __debug__:
-            #raise e
+        if __debug__:
+            raise e
         error_msg = f'{full_qualname(e)}: {str(e)}'
         messages.error(request, error_msg)
         return JsonResponse({'error_msg' : error_msg})
-        #return render_error(request, excep=e)
 
 
 @login_required   

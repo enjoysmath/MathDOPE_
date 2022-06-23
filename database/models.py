@@ -1,142 +1,26 @@
 from neomodel import (StructuredNode, StructuredRel, IntegerProperty,
                       StringProperty, BooleanProperty, One, OneOrMore, 
                       ZeroOrMore, FloatProperty, UniqueIdProperty, 
-                      RelationshipTo, JSONProperty)
+                      RelationshipTo)
 #from django_neomodel import DjangoNode
 #from django.db import models
-from sopot.settings import (MAX_NAMESPACE_LENGTH, MAX_CODE_LENGTH)
+from sopot.settings import MAX_NAME_LENGTH, DEFAULT_CATEGORY_NAME
 from django.core.exceptions import ObjectDoesNotExist
 from neomodel import db
 from sopot.python_tools import deep_get
 from sopot.variable import Variable
 from sopot.keyword import Keyword
-from database.neo4j_tools import neo4j_escape_regex_str
-
-# Create your models here.
-
-class QuiverModel(StructuredNode):
-    namespace = StringProperty(max_length=MAX_NAMESPACE_LENGTH, required=True)
-    category = RelationshipTo('Category', 'LIVES_IN_CATEGORY', cardinality=One)
-            
-    @staticmethod
-    def create_model(**kwargs):
-        raise NotImplementedError    
-
+from database.neo4j_tools import neo4j_escape_regex_str 
 
     
-#class Diagram(StructuredNode, Model):  
-    #"""
-    #Models should be decouple (inheritance rarely used)
-    #Otherwise basic seeming queries return all types in the hierarchy.
-    #Hence just StructuredNode here.
-    #"""
-    #uid = UniqueIdProperty()
-    #name = StringProperty(max_length=MAX_TEXT_LENGTH, required=True)
-    #objects = RelationshipTo('Object', 'CONTAINS')    
-    #category = RelationshipTo('Category', 'IN_CATEGORY', cardinality=One)
-    #COMMUTES = { 'C' : 'Commutes', 'NC' : 'Noncommutative' }
-    #commutes = StringProperty(choices=COMMUTES, default='C')
-    #checked_out_by = StringProperty(max_length=MAX_TEXT_LENGTH)
-
-#class Proof(Object):
-    ## one to many proof steps, which are ordered by their proof_index member
-
-#class MathRelationship(StructuredRel):
-    #template = StringProperty(max_length=MAX_TEXT_LENGTH)
-    #proof = RelationshipTo('Proof', 'HAS_PROOF', cardinality=OneOrMore)
-class QuiverObject(QuiverModel):
-        
-    diagram_index = IntegerProperty(required=True)
-
-    # Position & Color:
-    x = IntegerProperty(default=0)
-    y = IntegerProperty(default=0) 
-    
-    color_hue = IntegerProperty(default=0)
-    color_sat = IntegerProperty(default=0)
-    color_lum = IntegerProperty(default=0)
-    color_alph = FloatProperty(default=1.0) 
-    
-    @staticmethod
-    def our_create(**kwargs):
-        ob = Object(**kwargs).save()
-        return ob
-    
-    def copy(self, nodes_memo, **kwargs):
-        copy = Object.our_create(**kwargs, diagram_index=self.diagram_index)
-        nodes_memo[copy.diagram_index] = copy
-        copy.name = self.name
-        copy.x = self.x
-        copy.y = self.y
-        copy.color_hue = self.color_hue
-        copy.color_sat = self.color_sat
-        copy.color_lum = self.color_lum
-        copy.alph = self.color_alph
-                
-        for f in self.all_morphisms():
-            x = f.end_node()
-            if x.diagram_index not in nodes_memo:
-                x.copy(nodes_memo)
-            y = nodes_memo[x.diagram_index]
-            f1 = copy.morphisms.connect(y)
-            f1.copy_properties_from(f, nodes_memo)  # Calls save()
-            
-        copy.save()
-        
-        return copy    
-    
-    def __repr__(self):
-        return f'Object("{self.name}")'
-    
-    def all_morphisms(self):
-        results, meta = db.cypher_query(
-            f'MATCH (x:Object)-[f:MAPS_TO]->(y:Object) WHERE x.uid="{self.uid}" RETURN f')
-        return [QuiverArrow.inflate(row[0]) for row in results]
-                    
-    def delete(self):
-        # Delete all the outgoing morphisms first:
-        db.cypher_query(f'MATCH (o:Object)-[f:MAPS_TO]-(p:Object) WHERE o.uid="{self.uid}" DELETE f')       
-        super().delete()
-           
-    @staticmethod
-    def create_from_editor(format, index:int):
-        o = Object(diagram_index=index)
-        o.init_from_editor(format, index)
-        return o
-        
-    def init_from_editor(self, format, index):
-        o = self
-        o.x = format[0]
-        o.y = format[1]
-        
-        if len(format) > 2:
-            o.name = format[2]
-            
-        if len(format) > 3:
-            color = format[3]
-            o.color_hue = color[0]
-            o.color_sat = color[1]
-            o.color_lum = color[2]
-            o.color_alph = color[3]
-        
-        o.save()   
-        return o
-    
-    def quiver_format(self):
-        return [self.x, self.y, self.name, 
-                [self.color_hue, self.color_sat, self.color_lum, self.color_alph]]
-    
-    
-class QuiverArrow(QuiverObject):
-    #uid = StringProperty(default=Morphism.get_unique_id())
-    uid = UniqueIdProperty()
-        
+class QuiverArrow(StructuredRel):    
     # RE-DESIGN: TODO - these need to be independent of style and settable in an accompanying
     # panel to the editor.
     # These are the mathematical properties, that you can search by:
     #epic = BooleanProperty(default=False)
     #monic = BooleanProperty(default=False)
     #inclusion = BooleanProperty(default=False)
+    diagram_index = IntegerProperty(required=True)
     
     # Strictly style below this line:   
     NUM_LINES = { 1: 'one', 2: 'two', 3: 'three' }
@@ -192,8 +76,8 @@ class QuiverArrow(QuiverObject):
         self.color_lum = f.color_lum
         self.color_alph = f.color_alph
         self.save()
-    
-    def load_from_editor(self, format):         
+        
+    def load_from_editor(self, format):
         if len(format) > 2:
             self.name = format[2]
         else:
@@ -252,7 +136,7 @@ class QuiverArrow(QuiverObject):
         self.save()
         
     def quiver_format(self):
-        format = [self.start_node().diagram_index, self.end_node().diagram_index]
+        format = [self.source.diagram_index, self.target.diagram_index]
         format.append(self.name if self.name is not None else '')
         format.append(self.alignment)
         options = {
@@ -284,351 +168,444 @@ class QuiverArrow(QuiverObject):
         format.append([self.color_hue, self.color_sat, self.color_lum, self.color_alph])
         return format
     
-            
-
-        
-        
-#class Category(StructuredNode, QuiverModel):
-    #unique_fields = ['name']
-    #uid = UniqueIdProperty()
-    #name = StringProperty(max_length=MAX_TEXT_LENGTH, required=True)
-    #objects = RelationshipTo('Object', 'CONTAINS')
-    #of_categories = BooleanProperty(default=False)
-
-    #@staticmethod
-    #def our_create(**kwargs):
-        #category = Category(**kwargs).save()
-        #return category
+    @property
+    def target(self):
+        return QuiverNode.nodes.get_or_none(uid=self.target_uid)
     
+    @property
+    def source(self):
+        return QuiverNode.nodes.get_or_none(uid=self.source_uid)
+
+
+class QuiverNode(StructuredNode):
+    uid = UniqueIdProperty()
+    name = StringProperty(max_length=MAX_NAME_LENGTH, required=True)
+    category = RelationshipTo('Category', 'LIVES_IN', cardinality=One)
+    maps_to = RelationshipTo('QuiverNode', 'MAPS_TO', model=QuiverArrow, cardinality=ZeroOrMore)    
+    diagram_index = IntegerProperty(required=True)
+
+    # Position & Color:
+    x = IntegerProperty(default=0)
+    y = IntegerProperty(default=0) 
+    
+    color_hue = IntegerProperty(default=0)
+    color_sat = IntegerProperty(default=0)
+    color_lum = IntegerProperty(default=0)
+    color_alph = FloatProperty(default=1.0) 
+            
+    @staticmethod
+    def create_model(**kwargs):
+        raise NotImplementedError    
+    
+    @staticmethod
+    def our_create(**kwargs):
+        ob = QuiverNode(**kwargs).save()
+        return ob
+    
+    #def copy(self, nodes_memo, **kwargs):
+        #copy = QuiverNode.our_create(**kwargs, diagram_index=self.diagram_index)
+        #nodes_memo[copy.diagram_index] = copy
+        #copy.name = self.name
+        #copy.x = self.x
+        #copy.y = self.y
+        #copy.color_hue = self.color_hue
+        #copy.color_sat = self.color_sat
+        #copy.color_lum = self.color_lum
+        #copy.alph = self.color_alph
+                
+        #for f in self.all_morphisms():
+            #x = f.end_node()
+            #if x.diagram_index not in nodes_memo:
+                #x.copy(nodes_memo)
+            #y = nodes_memo[x.diagram_index]
+            #f1 = copy.morphisms.connect(y)
+            #f1.copy_properties_from(f, nodes_memo)  # Calls save()
+            
+        #copy.save()
         
-#class Diagram(StructuredNode, QuiverModel):  
+        #return copy    
+    
+    def __repr__(self):
+        return f'QuiverNode("{self.name}")'
+    
+    def all_outgoing_arrows(self):
+        results, meta = db.cypher_query(
+            f"MATCH (X:QuiverNode)-[r:MAPS_TO]->(:QuiverNode)"
+            f"MATCH (f:QuiverArrow) "
+            f"WHERE X.uid='{self.uid}' AND f.uid=r.uid "
+            f"RETURN f")
+        return [QuiverArrow.inflate(row[0]) for row in results]
+                    
+    def delete(self):
+        # Delete all the outgoing morphisms first:
+        db.cypher_query(f"MATCH (X:QuiverNode)-[r:MAPS_TO]->(:QuiverNode)"
+                        f"MATCH (f:QuiverArrow) "
+                        f"WHERE X.uid='{self.uid}' AND f.uid=r.uid DETACH DELETE f, r")  
+        # TODO: see if we need to also delete r here ("DELETE r,f"), or whether the following automatically deletes it:
+        super().delete()
+           
+    @staticmethod
+    def create_from_editor(format, index:int):
+        o = QuiverNode(diagram_index=index)
+        o.init_from_editor(format, index)
+        return o
+        
+    def init_from_editor(self, format, index):
+        o = self
+        o.x = format[0]
+        o.y = format[1]
+        
+        if len(format) > 2:
+            o.name = format[2]
+            
+        if len(format) > 3:
+            color = format[3]
+            o.color_hue = color[0]
+            o.color_sat = color[1]
+            o.color_lum = color[2]
+            o.color_alph = color[3]
+        
+        o.save()   
+        return o
+    
+    def quiver_format(self):
+        return [self.x, self.y, self.name, 
+                [self.color_hue, self.color_sat, self.color_lum, self.color_alph]]
+        
+        
+class QuiverDiagram(StructuredNode):  
     #"""
     #Models should be decouple (inheritance rarely used)
     #Otherwise basic seeming queries return all types in the hierarchy.
     #Hence just StructuredNode here.
     #"""
-    #name = Namespace()
-    #objects = RelationshipTo('Object', 'CONTAINS')    
-    #category = RelationshipTo('Category', 'IN_CATEGORY', cardinality=One)
-    #COMMUTES = { 'C' : 'Commutes', 'NC' : 'Noncommutative' }
-    #commutes = StringProperty(choices=COMMUTES, default='C')
-    #checked_out_by = StringProperty(max_length=MAX_TEXT_LENGTH)
+    COMMUTES = { 'C' : 'Commutes', 'NC' : 'Noncommutative' }
     
-    #def morphism_count(self):
-        #count = 0
-        #for x in self.all_objects():
-            #count += len(x.morphisms)
-        #return count
+    uid = UniqueIdProperty()
+    name = StringProperty(required=True)
+    checked_out_by = StringProperty(max_length=MAX_NAME_LENGTH)
+    objects = RelationshipTo('QuiverNode', 'CONTAINS', cardinality=ZeroOrMore)   
+    arrows = RelationshipTo('QuiverArrow', 'CONTAINS', cardinality=ZeroOrMore)
+    category = RelationshipTo('Category', 'LIVES_IN', cardinality=One)
+    commutes = StringProperty(choices=COMMUTES, default='C')
     
-    #def copy(self, **kwargs):
-        #copy = Diagram.our_create(**kwargs)
+    def morphism_count(self):
+        count = 0
+        for x in self.all_objects():
+            count += len(x.morphisms)
+        return count
+    
+    def copy(self, **kwargs):
+        copy = QuiverDiagram.our_create(**kwargs)
         
-        #nodes_memo = {}
+        nodes_memo = {}
         
-        #for x in self.all_objects():
-            #if x.diagram_index not in nodes_memo:
-                #x.copy(nodes_memo)
+        for x in self.all_objects():
+            if x.diagram_index not in nodes_memo:
+                x.copy(nodes_memo)
         
-        #for x in nodes_memo.values():  # BUGFIX: need to consider all nodes added in subcalls, secondly
-            #copy.objects.connect(x)
+        for x in nodes_memo.values():  # BUGFIX: need to consider all nodes added in subcalls, secondly
+            copy.objects.connect(x)
             
-        #copy.save()                    
-        #return copy
+        copy.save()                    
+        return copy
                 
+    @property
+    def commutes_text(self):
+        return self.COMMUTES[self.commutes]
+    
     #@property
-    #def commutes_text(self):
-        #return self.COMMUTES[self.commutes]
+    #def commutes(self):
+        #return self.COMMUTES[self.commutative]
     
-    ##@property
-    ##def commutes(self):
-        ##return self.COMMUTES[self.commutative]
+    #@commutes.setter
+    #def commutes(self, text):
+        #for key, val in self.COMMUTES.items():
+            #if text == val:
+                #self.commutative = key
+                #break
+        #else:
+            #raise ValueError(f'There are only {len(self.COMMUTES)} possible options for Diagram.commutes')
     
-    ##@commutes.setter
-    ##def commutes(self, text):
-        ##for key, val in self.COMMUTES.items():
-            ##if text == val:
-                ##self.commutative = key
-                ##break
-        ##else:
-            ##raise ValueError(f'There are only {len(self.COMMUTES)} possible options for Diagram.commutes')
-    
-    #@staticmethod
-    #def our_create(**kwargs):
-        #diagram = Diagram(**kwargs).save()
-        #category = get_unique(Category, name='Any')
-        #diagram.category.connect(category)
-        #diagram.save()  
-        #return diagram
+    @staticmethod
+    def our_create(**kwargs):
+        diagram = QuiverDiagram(**kwargs).save()
+        QuiverDiagram.init_diagram(diagram)
+        return diagram
         
-    #def quiver_format(self):
-        #edges = []
-        #vertices = []
+    @staticmethod
+    def init_diagram(diagram):
+        category = get_unique(Category, name=DEFAULT_CATEGORY_NAME)
+        diagram.category.connect(category)
+        diagram.save()  
         
-        #objects = list(self.all_objects())
-        #objects.sort(key=lambda x: x.diagram_index)        
+    def quiver_format(self):
+        edges = []
+        vertices = []
         
-        #for o in objects:
-            #vertices.append(o.quiver_format())
-            #for f in o.all_morphisms():
-                #edges.append(f.quiver_format())
+        objects = list(self.all_objects())
+        objects.sort(key=lambda x: x.diagram_index)        
+        
+        for o in objects:
+            vertices.append(o.quiver_format())
+            for f in o.all_outgoing_arrows():
+                edges.append(f.quiver_format())
                     
-        #format = [0, len(vertices)]
-        #format += vertices
-        #format += edges
+        format = [0, len(vertices)]
+        format += vertices
+        format += edges
         
-        #return format
+        return format
     
-    #def load_from_editor(self, format):
-        #obs = []
-        #vertices = format[2:2 + format[1]]
+    def load_from_editor(self, format):
+        obs = []
+        vertices = format[2:2 + format[1]]
         
-        #for k,v in enumerate(vertices):
-            #o = Object.create_from_editor(v, k)
-            #obs.append(o)
+        for k,v in enumerate(vertices):
+            o = Object.create_from_editor(v, k)
+            obs.append(o)
         
-        #edges = format[2 + format[1]:]
+        edges = format[2 + format[1]:]
             
-        #for k,e in enumerate(edges):
-            #A = obs[e[0]]
-            #B = obs[e[1]]
-            #f = A.morphisms.connect(B, {'diagram_index':k})
-            #f.load_from_editor(e)
-            #f.save()
-            #A.save()            
+        for k,e in enumerate(edges):
+            A = obs[e[0]]
+            B = obs[e[1]]
+            f = A.maps_to.connect(B, {'diagram_index': k})
+            f.save()
+            f.load_from_editor(e)
+            A.save()
+            f.save()
             
-        #self.add_objects(obs)               
+        self.add_objects(obs)               
     
-    #def all_objects(self):
-        #results, meta = db.cypher_query(
-            #f'MATCH (D:Diagram)-[:CONTAINS]->(x:Object) WHERE D.name="{self.name}" RETURN x')
-        #return [Object.inflate(row[0]) for row in results]
+    def all_objects(self):
+        results, meta = db.cypher_query(
+            f'MATCH (D:QuiverDiagram)-[:CONTAINS]->(x:QuiverNode) WHERE D.uid="{self.uid}" RETURN x')
+        return [Object.inflate(row[0]) for row in results]
         
-    #def delete_objects(self):
-        #for o in self.all_objects():
-            #o.delete()
-        #self.save()
+    def delete_objects(self):
+        for o in self.all_objects():
+            o.delete()
+        self.save()
         
-    #def add_objects(self, obs):
-        #for o in obs:
-            #self.objects.connect(o)
-        #self.save()
+    def add_objects(self, obs):
+        for o in obs:
+            self.objects.connect(o)
+        self.save()
         
-    #@staticmethod
-    #def get_paths_by_length(diagram_name):
-        #paths_by_length = \
-            #f"MATCH (D:Diagram)-[:CONTAINS]->(X:Object), " + \
-            #f"p=(X)-[:MAPS_TO*]->(:Object) " + \
-            #f"WHERE D.name = '{diagram_name}' " + \
-            #f"RETURN p " + \
-            #f"ORDER BY length(p) DESC" 
+    @staticmethod
+    def get_paths_by_length(diagram_uid):
+        paths_by_length = \
+            f"MATCH (D:Diagram)-[:CONTAINS]->(X:Node), " + \
+            f"p=(X)-[:MAPS_TO*]->(:Node) " + \
+            f"WHERE D.uid = '{diagram_uid}' " + \
+            f"RETURN p " + \
+            f"ORDER BY length(p) DESC" 
         
-        #paths_by_length, meta = db.cypher_query(paths_by_length)
+        paths_by_length, meta = db.cypher_query(paths_by_length)
         
-        #return paths_by_length
+        return paths_by_length
                           
-        ### TODO: test code with doublequote in template_regex ^^^        
+        ## TODO: test code with doublequote in template_regex ^^^        
         
-    #@staticmethod
-    #def build_query_from_paths(paths):
-        #nodes = {
-            ## Keyed by Object.diagram_index, value is Object
-        #}
-        #rels = {
-            ## Keyed by Morphism.diagram_index, value is Morphism
-        #}
+    @staticmethod
+    def build_query_from_paths(paths):
+        nodes = {
+            # Keyed by Object.diagram_index, value is Object
+        }
+        rels = {
+            # Keyed by Morphism.diagram_index, value is Morphism
+        }
 
-        #search_query = ''
+        search_query = ''
                
-        #for path in paths:
-            #path = path[0]   # [0] is definitely needed here
-            #node = Object.inflate(path.start_node)
+        for path in paths:
+            path = path[0]   # [0] is definitely needed here
+            node = Object.inflate(path.start_node)
             
-            #search_query += f"(n{node.diagram_index}:Object)"
+            search_query += f"(n{node.diagram_index}:Node)"
             
-            #if node.diagram_index not in nodes:
-                #nodes[node.diagram_index] = node
+            if node.diagram_index not in nodes:
+                nodes[node.diagram_index] = node
             
-            #add_query = ''
+            add_query = ''
             
-            #for rel in path.relationships:
-                #rel = QuiverArrow.inflate(rel)
+            for rel in path.relationships:
+                rel = QuiverArrow.inflate(rel)
+                #rel = get_model_by_uid(QuiverArrow, uid=rel.uid)
                 
-                #if rel.diagram_index not in rels:
-                    #rels[rel.diagram_index] = rel
+                if rel.diagram_index not in rels:
+                    rels[rel.diagram_index] = rel
                     
-                    #add_query += f"-[r{rel.diagram_index}:MAPS_TO]->"
-                    #next_node = rel.end_node()  # BUGFIX: no need to inflate here
-                    #add_query += f"(n{next_node.diagram_index}:Object)"
+                    add_query += f"-[r{rel.diagram_index}:MAPS_TO]->"
+                    next_node = rel.end_node()  # BUGFIX: no need to inflate here
+                    add_query += f"(n{next_node.diagram_index}:Node)"
                     
-                    ## BUGFIX: don't forget to add the next node into nodes:
-                    #if next_node.diagram_index not in nodes:
-                        #nodes[next_node.diagram_index] = next_node
+                    # BUGFIX: don't forget to add the next node into nodes:
+                    if next_node.diagram_index not in nodes:
+                        nodes[next_node.diagram_index] = next_node
             
-            #if add_query:      
-                #search_query += add_query
+            if add_query:      
+                search_query += add_query
                 
-            #search_query += ', '
+            search_query += ', '
         
-        #if search_query:
-            #search_query = search_query[:-2]
-        #return nodes, rels, search_query
+        if search_query:
+            search_query = search_query[:-2]
+        return nodes, rels, search_query
     
-    #@staticmethod
-    #def build_match_query(query, nodes, rels):
-        #query = "MATCH " + query            
+    @staticmethod
+    def build_match_query(query, nodes, rels):
+        query = "MATCH " + query            
         
-        #template_regexes = {
-            ## Keyed by node or relationship .name property, values are 
-            ## (template, neo4j regex)
-        #}
+        template_regexes = {
+            # Keyed by node or relationship .name property, values are 
+            # (template, neo4j regex)
+        }
         
         #var_mapping = {
             ## Keyed by variable object, value is list of tuples (node or rel, template_index)
         #}
         
-        #def neo4j_regex_from_template(template):
-            #regex = ""
-            #for piece in template:
-                #if isinstance(piece, Variable):
-                    #regex += ".+"
-                #elif isinstance(piece, Keyword):
-                    #regex += neo4j_escape_regex_str(str(piece))
-                #else:  # str
-                    #regex += neo4j_escape_regex_str(piece)                
-            #return regex   
+        def neo4j_regex_from_template(template):
+            regex = ""
+            for piece in template:
+                if isinstance(piece, Variable):
+                    regex += ".+"
+                elif isinstance(piece, Keyword):
+                    regex += neo4j_escape_regex_str(str(piece))
+                else:  # str
+                    regex += neo4j_escape_regex_str(piece)                
+            return regex   
                     
-        #for node in nodes.values():
-            #name = node.name
+        for node in nodes.values():
+            name = node.name
             
-            #if name not in template_regexes:
-                #template, vars = Variable.parse_into_template(name)
-                #regex = neo4j_regex_from_template(template)
-                #template_regexes[name] = (template, regex)
+            if name not in template_regexes:
+                template, vars = Variable.parse_into_template(name)
+                regex = neo4j_regex_from_template(template)
+                template_regexes[name] = (template, regex)
                 
-        #for rel in rels.values():
-            #name = rel.name
+        for rel in rels.values():
+            name = rel.name
             
-            #if name not in template_regexes:
-                #template, vars = Variable.parse_into_template(name)
-                #regex = neo4j_regex_from_template(template)
-                #template_regexes[name] = (template, regex)       
+            if name not in template_regexes:
+                template, vars = Variable.parse_into_template(name)
+                regex = neo4j_regex_from_template(template)
+                template_regexes[name] = (template, regex)       
         
-        #query += " WHERE "
+        query += " WHERE "
         
-        #for index, node in nodes.items():
-            #query += f"n{index}.name =~ '{template_regexes[node.name][1]}' AND "
+        for index, node in nodes.items():
+            query += f"n{index}.uid =~ '{template_regexes[node.uid][1]}' AND "
             
-        #if rels:
-            #for index, rel in rels.items():
-                #query += f"r{index}.name =~ '{template_regexes[rel.name][1]}' AND "
+        if rels:
+            for index, rel in rels.items():
+                query += f"r{index}.uid =~ '{template_regexes[rel.uid][1]}' AND "
             
-        #query = query[:-5]   # Remove AND      
+        query = query[:-5]   # Remove AND      
         
-        #return template_regexes, query
+        return template_regexes, query   
+
+
+class Diagram(QuiverDiagram):
+    @staticmethod
+    def our_create(**kwargs):
+        diagram = Diagram(**kwargs).save()
+        Diagram.init_diagram(diagram)
+        return diagram
+
+class Object(QuiverNode):
+    pass
+        
+class Category(StructuredNode):
+    uid = UniqueIdProperty()
+    name = StringProperty(required=True)
+
+    @staticmethod
+    def our_create(**kwargs):
+        category = Category(**kwargs).save()
+        return category
+
+class Arrow(QuiverArrow):
+    pass        
+
+class DiagramSet(Object):
+    diagrams = RelationshipTo('Diagram', 'CONTAINS', cardinality=OneOrMore)
+
+class DiagramRule(Arrow):
+    checked_out_by = StringProperty(max_length=MAX_NAME_LENGTH)
     
+    # Mathematics
+    #functor_id = StringProperty()
+    # The link to an actual known functor, if this rule is factorial, or None otherwise
+    # We will have to be careful when deleting a Functor.  We can only delete it
+    # if there exist no rules referring to it through this property.
     
-
-#class NaturalMap(QuiverArrow):
-    #pass
-
-
-#class FunctorOb(Object):
-    #def all_morphisms(self):
-        #results, meta = db.cypher_query(
-            #f'MATCH (x:NaturalMap)-[f:MAPS_TO]->(y:NaturalMap) WHERE x.uid="{self.uid}" RETURN f')
-        #return [NaturalMap.inflate(row[0]) for row in results]
-                    
-    #def delete(self):
-        ## Delete all the outgoing morphisms first:
-        #db.cypher_query(f'MATCH (o:FunctorOb)-[f:MAPS_TO]-(p:FunctorOb) WHERE o.uid="{self.uid}" DELETE f')       
-        #super().delete()
-           
+    @property
+    def checked_out_by(self):
+        return self.checkedOutBy
+    
+    @checked_out_by.setter
+    def checked_out_by(self, username):
+        if self.checked_out_by != username:
+            diagram = self.key_diagram.single()
+            diagram.checked_out_by = username
+            diagram.save()
+            diagram = self.result_diagram.single()
+            diagram.checked_out_by = username
+            diagram.save()
+            self.checkedOutBy = username
+            self.save()
+            
+    def can_be_checked_out(self):
+        return self.key_diagram.single().checked_out_by is None and \
+            self.result_diagram.single().checked_out_by is None and \
+            self.checked_out_by is None
+    
+    @staticmethod
+    def our_create(key=None, res=None, **kwargs):
+        if key is None:
+            key = 'Key'
+        if res is None:
+            res = 'Result'
+            
+        cat = get_unique(Category, name='Any')    
+        source = Diagram(name=key).save()
+        source.category.connect(cat)
+        source.save()
+        target = Diagram(name=res).save()
+        target.category.connect(cat)
+        target.save()
+        rule = DiagramRule(**kwargs)
+        rule.save()
+        rule.key_diagram.connect(source)
+        rule.result_diagram.connect(target)
+        rule.save()
+        return rule
+        
     #@staticmethod
-    #def create_from_editor(format, index:int):
-        #o = FunctorOb()
-        #Object.init_from_editor(self, format, index)
+    #def get_variable_mapping(source:Diagram, target:Diagram) -> dict:
+        #map = {}
         
-        
-
-#class DiagramRule(StructuredNode, QuiverModel):
-    #uid = UniqueIdProperty()
-    #name = StringProperty(max_length=MAX_TEXT_LENGTH, required=True)
-    #checkedOutBy = StringProperty(max_length=MAX_TEXT_LENGTH)
-    #key_diagram = RelationshipTo('Diagram', 'KEY_DIAGRAM', cardinality=One)
-    #result_diagram = RelationshipTo('Diagram', 'RESULT_DIAGRAM', cardinality=One)
-    
-    ## Mathematics
-    ##functor_id = StringProperty()
-    ## The link to an actual known functor, if this rule is factorial, or None otherwise
-    ## We will have to be careful when deleting a Functor.  We can only delete it
-    ## if there exist no rules referring to it through this property.
-    
-    #@property
-    #def checked_out_by(self):
-        #return self.checkedOutBy
-    
-    #@checked_out_by.setter
-    #def checked_out_by(self, username):
-        #if self.checked_out_by != username:
-            #diagram = self.key_diagram.single()
-            #diagram.checked_out_by = username
-            #diagram.save()
-            #diagram = self.result_diagram.single()
-            #diagram.checked_out_by = username
-            #diagram.save()
-            #self.checkedOutBy = username
-            #self.save()
-            
-    #def can_be_checked_out(self):
-        #return self.key_diagram.single().checked_out_by is None and \
-            #self.result_diagram.single().checked_out_by is None and \
-            #self.checked_out_by is None
-    
-    #@staticmethod
-    #def our_create(key=None, res=None, **kwargs):
-        #if key is None:
-            #key = 'Key'
-        #if res is None:
-            #res = 'Result'
-            
-        #cat = get_unique(Category, name='Any')    
-        #source = Diagram(name=key).save()
-        #source.category.connect(cat)
-        #source.save()
-        #target = Diagram(name=res).save()
-        #target.category.connect(cat)
-        #target.save()
-        #rule = DiagramRule(**kwargs)
-        #rule.save()
-        #rule.key_diagram.connect(source)
-        #rule.result_diagram.connect(target)
-        #rule.save()
-        #return rule
-        
-    ##@staticmethod
-    ##def get_variable_mapping(source:Diagram, target:Diagram) -> dict:
-        ##map = {}
-        
-        ##for x in source.all_objects():
-            ##template, vars = Variable.parse_template(text)
+        #for x in source.all_objects():
+            #template, vars = Variable.parse_template(text)
                 
-    ##def get_variable_template_regex(self, text:str) -> bidict:    
-    
-#class DiagramSequence(StructuredNode):
-    #pass
-    
+    #def get_variable_template_regex(self, text:str) -> bidict:    
+
+
 
 model_str_to_class = {
-    #'Category' : Category,
-    #'Object' : Object,
-    #'Diagram' : Diagram,
-    #'DiagramRule' : DiagramRule,
+    'Category' : Category,
+    'Object' : Object,
+    'Diagram' : Diagram,
+    'DiagramRule' : DiagramRule,
 }
 
 #MAX_MODEL_CLASS_NAME_LENGTH = max([len(x) for x in model_str_to_class.keys()])
 
 def get_model_class(Model:str):
-    if len(Model) > MAX_MODEL_CLASS_NAME_LENGTH:
+    if len(Model) > MAX_NAME_LENGTH:
         return ValueError("You're passing in an unimplemented Model string.")        
     
     if Model not in model_str_to_class:
@@ -639,7 +616,7 @@ def get_model_class(Model:str):
 
 
 def get_model_by_name(Model, name:str):
-    if len(name) > MAX_TEXT_LENGTH:
+    if len(name) > MAX_NAME_LENGTH:
         raise ValueError(f'That {Model} name is longer than {MAX_TEXT_LENGTH} characters.')
     
     if isinstance(Model, str):
@@ -648,7 +625,7 @@ def get_model_by_name(Model, name:str):
     model = Model.nodes.get_or_none(name=name)
     
     if model is None:
-        raise ObjectDoesNotExist(f'An instance of the model {Model} with uid "{uid}" does not exist.')
+        raise ObjectDoesNotExist(f'An instance of the {Model} with name "{name}" does not exist.')
     
     return model
 
@@ -663,7 +640,7 @@ def get_model_by_uid(Model, uid:str):
     model = Model.nodes.get_or_none(uid=uid)    
     
     if model is None:
-        raise ObjectDoesNotExist(f'An instance of the model {Model} with uid "{uid}" does not exist.')
+        raise ObjectDoesNotExist(f'An instance of the {Model} with uid "{uid}" does not exist.')
     
     return model
                     
