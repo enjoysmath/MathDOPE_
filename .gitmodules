@@ -1,6 +1,6 @@
 [submodule "quiver"]
 	path = quiver
 	url = https://github.com/enjoysmath/quiver.git
-[submodule "sopot/static/quiver"]
-	path = sopot/static/quiver
+[submodule "dope/static/quiver"]
+	path = dope/static/quiver
 	url = https://github.com/enjoysmath/quiver.git

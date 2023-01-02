@@ -1,7 +1,7 @@
 from .settings import MAX_TEXT_LENGTH
 from django.shortcuts import render, HttpResponse
 from django.contrib import messages
-from sopot.python_tools import full_qualname
+from dope.python_tools import full_qualname
 import json
 
 

@@ -1,1 +1,1 @@
-web: gunicorn sopot.wsgi
+web: gunicorn dope.wsgi

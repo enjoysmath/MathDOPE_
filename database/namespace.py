@@ -1,5 +1,5 @@
 from neomodel import StructuredNode, StringProperty, ZeroOrMore, RelationshipTo
-from sopot.settings import (MAX_NAMESPACE_LENGTH,)
+from dope.settings import (MAX_NAMESPACE_LENGTH,)
 
 class Namespace(StructuredNode):    
     identifier = StringProperty(max_length=MAX_NAMESPACE_LENGTH, required=True)

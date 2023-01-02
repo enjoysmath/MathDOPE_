@@ -4,12 +4,12 @@ from neomodel import (StructuredNode, StructuredRel, IntegerProperty,
                       RelationshipTo)
 #from django_neomodel import DjangoNode
 #from django.db import models
-from sopot.settings import MAX_NAME_LENGTH, DEFAULT_CATEGORY_NAME
+from dope.settings import MAX_ATOMIC_LATEX_LENGTH, DEFAULT_CATEGORY_NAME
 from django.core.exceptions import ObjectDoesNotExist
 from neomodel import db
-from sopot.python_tools import deep_get
-from sopot.variable import Variable
-from sopot.keyword import Keyword
+from dope.python_tools import deep_get
+from dope.variable import Variable
+from dope.keyword import Keyword
 from database.neo4j_tools import neo4j_escape_regex_str 
 
     
@@ -179,7 +179,7 @@ class QuiverArrow(StructuredRel):
 
 class QuiverNode(StructuredNode):
     uid = UniqueIdProperty()
-    name = StringProperty(max_length=MAX_NAME_LENGTH, required=True)
+    name = StringProperty(max_length=MAX_ATOMIC_LATEX_LENGTH, required=True)
     category = RelationshipTo('Category', 'LIVES_IN', cardinality=One)
     maps_to = RelationshipTo('QuiverNode', 'MAPS_TO', model=QuiverArrow, cardinality=ZeroOrMore)    
     diagram_index = IntegerProperty(required=True)
@@ -283,7 +283,7 @@ class QuiverDiagram(StructuredNode):
     
     uid = UniqueIdProperty()
     name = StringProperty(required=True)
-    checked_out_by = StringProperty(max_length=MAX_NAME_LENGTH)
+    checked_out_by = StringProperty(max_length=MAX_ATOMIC_LATEX_LENGTH)
     objects = RelationshipTo('QuiverNode', 'CONTAINS', cardinality=ZeroOrMore)   
     arrows = RelationshipTo('QuiverArrow', 'CONTAINS', cardinality=ZeroOrMore)
     category = RelationshipTo('Category', 'LIVES_IN', cardinality=One)
@@ -534,7 +534,7 @@ class DiagramSet(Object):
     diagrams = RelationshipTo('Diagram', 'CONTAINS', cardinality=OneOrMore)
 
 class DiagramRule(Arrow):
-    checked_out_by = StringProperty(max_length=MAX_NAME_LENGTH)
+    checked_out_by = StringProperty(max_length=MAX_ATOMIC_LATEX_LENGTH)
     
     # Mathematics
     #functor_id = StringProperty()
@@ -605,7 +605,7 @@ model_str_to_class = {
 #MAX_MODEL_CLASS_NAME_LENGTH = max([len(x) for x in model_str_to_class.keys()])
 
 def get_model_class(Model:str):
-    if len(Model) > MAX_NAME_LENGTH:
+    if len(Model) > MAX_ATOMIC_LATEX_LENGTH:
         return ValueError("You're passing in an unimplemented Model string.")        
     
     if Model not in model_str_to_class:
@@ -616,7 +616,7 @@ def get_model_class(Model:str):
 
 
 def get_model_by_name(Model, name:str):
-    if len(name) > MAX_NAME_LENGTH:
+    if len(name) > MAX_ATOMIC_LATEX_LENGTH:
         raise ValueError(f'That {Model} name is longer than {MAX_TEXT_LENGTH} characters.')
     
     if isinstance(Model, str):

@@ -1,4 +1,4 @@
-from sopot.settings import (MAX_TEXT_LENGTH, MAX_NAMESPACE_LENGTH, MAX_CODE_LENGTH,
+from dope.settings import (MAX_TEXT_LENGTH, MAX_NAMESPACE_LENGTH, MAX_CODE_LENGTH,
                             MAX_GLOBAL_DICT_LENGTH)
 from neomodel import (StructuredNode, StructuredRel, IntegerProperty,
                       StringProperty, BooleanProperty, One, OneOrMore, 

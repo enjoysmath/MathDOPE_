@@ -2,14 +2,14 @@ from django.shortcuts import render, redirect, HttpResponse
 from .models import get_model_by_name, get_unique, Diagram
 from django.contrib.auth.decorators import login_required, user_passes_test
 #from accounts.permissions import is_editor
-from sopot.http_tools import get_posted_text, render_error
+from dope.http_tools import get_posted_text, render_error
 from django.http import JsonResponse
-from sopot.python_tools import full_qualname, call_with_retry
+from dope.python_tools import full_qualname, call_with_retry
 import json
 from django.db import OperationalError
 from django.core.exceptions import ObjectDoesNotExist
 from neomodel.properties import StringProperty
-from sopot.settings import MAX_NAME_LENGTH
+from dope.settings import MAX_ATOMIC_LATEX_LENGTH
 from django.contrib import messages
 
 
@@ -22,13 +22,13 @@ def create_diagram(request):
         
             #diagram_name = DrawnDiagram.validate_name(diagram_name)
         
-            if 0 < len(diagram_name) <= MAX_NAME_LENGTH:               
+            if 0 < len(diagram_name) <= MAX_ATOMIC_LATEX_LENGTH:               
                 diagram = call_with_retry(Diagram.nodes.get_or_none, name=diagram_name)
             else:
                 if len(diagram_name) == 0:
                     error_msg = 'A diagram name must be non-empty.'
-                elif len(diagram_name) > MAX_NAME_LENGTH:
-                    error_msg = f'A diagram name can be no longer than {MAX_NAME_LENGTH} characters.'                
+                elif len(diagram_name) > MAX_ATOMIC_LATEX_LENGTH:
+                    error_msg = f'A diagram name can be no longer than {MAX_ATOMIC_LATEX_LENGTH} characters.'                
             
             if diagram is None:
                 diagram = Diagram.our_create(

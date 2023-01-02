@@ -1,5 +1,5 @@
 """
-ASGI config for sopot project.
+ASGI config for dope project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sopot.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dope.settings')
 
 application = get_asgi_application()
