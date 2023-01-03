@@ -1,37 +1,32 @@
-from neomodel import *
-#from django_neomodel import DjangoNode
-#from django.db import models
-from dope.settings import MAX_ATOMIC_LATEX_LENGTH   #, DEFAULT_CATEGORY_NAME
-#from django.core.exceptions import ObjectDoesNotExist
-#from neomodel import db
-#from dope.python_tools import deep_get
-#from dope.variable import Variable
-#from dope.keyword import Keyword
-#from database.neo4j_tools import neo4j_escape_regex_str 
+from theory.models import *
 
-
-class Node(StructuredNode):
-   uid = UniqueIdProperty()
-   atomic_latex = StringProperty(max_length=MAX_ATOMIC_LATEX_LENGTH)
-   inhabits = RelationshipTo('Node', 'IS_ELEMENT_OF', cardinality=ZeroOrMore)   
-   
-   @property
-   def latex(self):
-      return self.atomic_latex
-      
 class Class(Node):
-   pass
-
-class Set(Class):
-   pass
-
-class BinaryOpExpr(Node):
-   left = RelationshipTo('Node', 'HAS_LEFT_ARG', cardinality=One)
-   right = RelationshipTo('Node', 'HAS_RIGHT_ARG', cardinality=One)   
-   operator = RelationshipTo('Node', 'HAS_OPERATOR', cardinality=One)
+   def __mul__(self, right:Node) -> BinaryOpExpr:
+      return self.binary_op_expr(right, op=r'\times ')
    
-   @property
-   def latex(self):
-      return self.left.get().latex + self.operator.get().latex + self.right.get().latex
+   def __le__(self, right:Node) -> BinaryOpExpr:
+      return self.binary_op_expr(right, op=r'\subset ')
+            
+def load_default_theory():
+   load_transitivity_of_subclassing_axiom()
+   
+def load_transitivity_of_subclassing_axiom():
+   A, B, C = symbols(Class, 'A', 'B', 'C')   
+   axiom = theorem([A <= B, B <= C], [A <= C], english='Subclass-of is a transitive relation.')
+   return axiom
+   
+   #B = get_unique(Class, atomic_latex='B')
+   #A_sub_B = Assertion().save()
+   #A_sub_B.expr.connect(A < B)
+   #B_sub_C = Assertion().save().expr.connect(B < C)
+   #A_sub_C = Assertion().save().expr.connect(A < C)
+   #axiom.premises.connect(A_sub_B, B_sub_C)
+   #axiom.conclusions.connect(A_sub_C)
+   #english = get_unique(English, string=)
+   #english.data.connect(axiom)
+   
+   #print(axiom.latex())
    
    
+      
+      

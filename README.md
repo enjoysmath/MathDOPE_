@@ -21,6 +21,8 @@ These definitions & proofs will then be freely accessible to math enthusiasts on
 
 ### How do I get set up as a developer? ###
 
+TeX All Things (for LaTeX display in Memgraph Lab): https://chrome.google.com/webstore/detail/tex-all-the-things/cbimabofgmfdkicghcadidpemeenbffn/related
+
 1. If you want to change the GUI (for this project), then you should purchase a $30 license for Bootstrap Studio (or borrow someone's license seat), otherwise you are free to manually edit the HTML & CSS except for your own (forked) project.
 2. Have [Python 3](https://www.python.org/downloads/) already installed and on your Path environment variable.
 3. Clone this repository to your desktop.

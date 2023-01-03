@@ -31,7 +31,13 @@ proj.directory-list = [{'dirloc': loc('.'),
 proj.file-type = 'shared'
 proj.launch-config = {loc('manage.py'): ('custom',
         ('',
+         'launch-WzK1BHvTw0sFzCSl')),
+                      loc('theory/memgraph_hellow.py'): ('project',
+        ('',
+         'launch-WzK1BHvTw0sFzCSl')),
+                      loc('theory/models.py'): ('project',
+        ('',
          'launch-WzK1BHvTw0sFzCSl'))}
-proj.main-file = loc('manage.py')
+proj.main-file = loc('theory/models.py')
 testing.test-framework = {None: ':internal djangotest',
                           loc('manage.py'): ':internal djangotest'}

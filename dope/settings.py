@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'database.apps.DatabaseConfig',
     'django_neomodel',
     'set_theory.apps.SetTheoryConfig',
+    'theory.apps.TheoryConfig',
 ]
 
 MIDDLEWARE = [
@@ -182,6 +183,8 @@ X_FRAME_OPTIONS = 'ALLOW'   # ie set this to "DENY"
 # https://docs.djangoproject.com/en/1.11/ref/clickjacking/
 
 MAX_ATOMIC_LATEX_LENGTH = 32
+MAX_ENGLISH_LENGTH = 512
+
 MAX_NAMESPACE_LENGTH = 64
 MAX_DIAGRAM_NAME_LENGTH = MAX_NAMESPACE_LENGTH
 MAX_USERNAME_LENGTH = MAX_NAMESPACE_LENGTH
