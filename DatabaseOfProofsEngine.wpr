@@ -1,5 +1,5 @@
 #!wing
-#!version=8.0
+#!version=10.0
 ##################################################################
 # Wing project file                                              #
 ##################################################################
@@ -7,10 +7,9 @@
 debug.launch-configs = (2,
                         {'launch-WzK1BHvTw0sFzCSl': ({},
         {'buildcmd': ('project',
-                      ('',
-                       '')),
+                      None),
          'env': ('project',
-                 []),
+                 ['']),
          'name': 'Run Django Server',
          'pyexec': ('project',
                     ''),
@@ -18,7 +17,7 @@ debug.launch-configs = (2,
                     []),
          'pyrunargs': ('project',
                        '-u'),
-         'runargs': 'runserver 0.0.0.0:8000',
+         'runargs': 'runserver 127.0.0.1:8000',
          'rundir': ('project',
                     '')})})
 proj.debug-sub-processes = True
@@ -38,6 +37,6 @@ proj.launch-config = {loc('manage.py'): ('custom',
                       loc('theory/models.py'): ('project',
         ('',
          'launch-WzK1BHvTw0sFzCSl'))}
-proj.main-file = loc('theory/models.py')
+proj.main-file = loc('manage.py')
 testing.test-framework = {None: ':internal djangotest',
                           loc('manage.py'): ':internal djangotest'}

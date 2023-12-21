@@ -19,7 +19,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from accounts.views import sign_up
 from .views import messages_, clear_messages
-from set_theory.views import test_page
 
 urlpatterns = [
     path('messages', messages_, name='messages'),
@@ -30,6 +29,4 @@ urlpatterns = [
     #path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('', sign_up),
-    path('set-theory/', test_page)
-] + \
-    static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

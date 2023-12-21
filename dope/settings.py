@@ -56,8 +56,6 @@ INSTALLED_APPS = [
     'cd_editor.apps.CdEditorConfig',
     'database.apps.DatabaseConfig',
     'django_neomodel',
-    'set_theory.apps.SetTheoryConfig',
-    'theory.apps.TheoryConfig',
 ]
 
 MIDDLEWARE = [

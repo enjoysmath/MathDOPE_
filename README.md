@@ -21,7 +21,25 @@ These definitions & proofs will then be freely accessible to math enthusiasts on
 
 ### How do I get set up as a developer? ###
 
-TeX All Things (for LaTeX display in Memgraph Lab): https://chrome.google.com/webstore/detail/tex-all-the-things/cbimabofgmfdkicghcadidpemeenbffn/related
+### Developer Setup
+
+1. #### Download and setup [Neo4j Desktop](https://neo4j.com/download/):
+      * Make sure to copy the license key given after you enter in your name, email, etc.
+      * Specify location `C:\Neo4jDesktop` during install.  
+      * Select "Run Neo4j" and finish.
+      * Click thorugh the defaults.  
+      * On "Software registration" page paste in the license key your copied previously.  
+      * Click the "next" button and wait for Neo4j to setup itself in the background.
+      * Delete the "Example Project" and wait a while.
+      * Install any updates if a dialog should pop up.
+      * Click "+ New Project".
+      * Add a "Local DBMS" and name it _ArrowBee_.
+      * Set the password to _ArrowBee_ as well for convenience and since this isn't the secure live site.
+      * Make sure "Version" is set to the latest version listed.
+      * Click "Create" and let it run a while in the background.
+      * Hover over the newly created "ArrowBee" DB and click the "Start" that appears.  Wait.
+      * Now that it's running hover over "ArrowBee" DB and click "Open (in Neo4j browser)".
+      * Here you can experiement with Cypher queries and see the query result graph visually or textually.
 
 1. If you want to change the GUI (for this project), then you should purchase a $30 license for Bootstrap Studio (or borrow someone's license seat), otherwise you are free to manually edit the HTML & CSS except for your own (forked) project.
 2. Have [Python 3](https://www.python.org/downloads/) already installed and on your Path environment variable.

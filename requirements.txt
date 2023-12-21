@@ -8,3 +8,4 @@ bidict
 django-bootstrap5
 psycopg2
 gqlalchemy
+django-neomodel
