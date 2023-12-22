@@ -186,6 +186,7 @@ MAX_ENGLISH_LENGTH = 512
 MAX_NAMESPACE_LENGTH = 64
 MAX_DIAGRAM_NAME_LENGTH = MAX_NAMESPACE_LENGTH
 MAX_USERNAME_LENGTH = MAX_NAMESPACE_LENGTH
+MAX_USER_EMAIL_LEN =  254       # See: https://stackoverflow.com/a/574698/7076615
 MAX_CODE_LENGTH = 4096
 MAX_GLOBAL_DICT_LENGTH = 512
 MAX_PASSWORD_LENGTH = 128
@@ -200,3 +201,18 @@ MAX_BAD_CONN_RETRIES = 5
 django_heroku.settings(locals())
 
 #MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+try:
+    from . import wing_debug_support
+    del wing_debug_support
+except ImportError:
+    if "WINGDB_ACTIVE" in os.environ:
+        print("Failed to import debugger support for Wing Pro")
+
+if "WINGDB_ACTIVE" in os.environ:
+    DEBUG = True
+    try:
+        TEMPLATES[0]["OPTIONS"]["debug"] = True
+    except Exception:
+        TEMPLATE_DEBUG = True
+

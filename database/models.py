@@ -530,8 +530,6 @@ class Category(StructuredNode):
 class Arrow(QuiverArrow):
     pass        
 
-class DiagramSet(Object):
-    diagrams = RelationshipTo('Diagram', 'CONTAINS', cardinality=OneOrMore)
 
 class DiagramRule(Arrow):
     checked_out_by = StringProperty(max_length=MAX_ATOMIC_LATEX_LENGTH)
