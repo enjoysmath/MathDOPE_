@@ -37,6 +37,7 @@ else:
 DEBUG = True    # TODO comment out
 
 ALLOWED_HOSTS = [
+    'mathdope.org', 'localhost',
     '127.0.0.1',
     #'database-of-proofs-engine.herokuapp.com/',
 ]
@@ -56,6 +57,8 @@ INSTALLED_APPS = [
     'cd_editor.apps.CdEditorConfig',
     'database.apps.DatabaseConfig',
     'django_neomodel',
+    'social_django',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -131,6 +134,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.facebook.FacebookOAuth2',
 ]
 
 

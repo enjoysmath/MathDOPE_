@@ -28,5 +28,5 @@ urlpatterns = [
     path('diagram-editor/', include('cd_editor.urls')),
     #path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
-    path('', sign_up),
+    path('', sign_up),    
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -20,7 +20,7 @@ class QuiverArrow(StructuredRel):
     #epic = BooleanProperty(default=False)
     #monic = BooleanProperty(default=False)
     #inclusion = BooleanProperty(default=False)
-    diagram_index = IntegerProperty(required=True)
+    diagram_index = IntegerProperty(required=True)    
     
     # Strictly style below this line:   
     NUM_LINES = { 1: 'one', 2: 'two', 3: 'three' }
