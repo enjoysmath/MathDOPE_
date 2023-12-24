@@ -37,6 +37,7 @@ else:
 DEBUG = True    # TODO comment out
 
 ALLOWED_HOSTS = [
+    'mathdope.org', 'localhost',
     '127.0.0.1',
     #'database-of-proofs-engine.herokuapp.com/',
 ]
@@ -56,6 +57,8 @@ INSTALLED_APPS = [
     'cd_editor.apps.CdEditorConfig',
     'database.apps.DatabaseConfig',
     'django_neomodel',
+    #'social_django',
+    #'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -133,6 +136,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#AUTHENTICATION_BACKENDS = [
+    #'social_core.backends.facebook.FacebookOAuth2',
+#]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -171,10 +178,16 @@ NEOMODEL_FORCE_TIMEZONE = False
 NEOMODEL_ENCRYPTED_CONNECTION = False  # TODO: how do we switch this on without error?
 
 from neomodel import config   # BUGFIX: had to do it this way
-config.MAX_POOL_SIZE = 50  # TODO: what does this affect?
+config.MAX_POOL_SIZE = 50  # TODO: what does this affect
 
-#LOGIN_REDIRECT_URL = 'home'
-#LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = 'sign_in'
+LOGIN_REDIRECT_URL = 'user_home'
+LOGOUT_REDIRECT_URL = '/'
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # TODO: Enable Click-jacking protection
 X_FRAME_OPTIONS = 'ALLOW'   # ie set this to "DENY"
@@ -184,7 +197,7 @@ MAX_ATOMIC_LATEX_LENGTH = 32
 MAX_ENGLISH_LENGTH = 512
 
 MAX_NAMESPACE_LENGTH = 64
-MAX_DIAGRAM_NAME_LENGTH = MAX_NAMESPACE_LENGTH
+MAX_DIAGRAM_NAME_LEN = 256
 MAX_USERNAME_LENGTH = MAX_NAMESPACE_LENGTH
 MAX_USER_EMAIL_LEN =  254       # See: https://stackoverflow.com/a/574698/7076615
 MAX_CODE_LENGTH = 4096

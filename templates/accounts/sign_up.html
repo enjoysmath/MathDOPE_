@@ -19,8 +19,8 @@
  <body>
   <nav class="navbar navbar-expand-lg navigation-clean-button navbar-light" style="/*position: absolute;*/width: 100%;height: auto;max-height: auto;padding: 0px;">
    <div class="container">
-    <a class="navbar-brand bounce animated" href="/" style="font-family: 'Indie Flower', serif;color: var(--bs-indigo);font-size: xx-large;font-weight: bold;margin: 0px;padding: 0px;">
-     Database Of Proofs Engine
+    <a class="navbar-brand" href="/" style="font-family: 'Indie Flower', serif;color: var(--bs-indigo);font-size: xx-large;font-weight: bold;margin: 0px;padding: 0px;">
+     MathDOPE
     </a>
     <button class="navbar-toggler" data-bs-target="#navcol-1" data-bs-toggle="collapse" style="transform: scale(0.74);">
      <span class="visually-hidden">
@@ -36,14 +36,18 @@
       <li class="nav-item">
       </li>
      </ul>
-     <div class="btn-group" role="group" style="margin: 4px;border-radius: 10px;">
-      <a class="btn btn-primary" href="{% url 'sign_in' %}" id="sign-in-button" role="button" style="padding: 3px 6px;border-radius: 8px;">
-       Sign In
-      </a>
-     </div>
+     {% if request.user.is_authenticated %}
+     <a class="btn btn-primary" href="{% url 'user_home' %}" style="padding: 3px 6px;border-radius: 8px;margin: 4px;">
+      My Home
+     </a>
+     {% endif %}
+     {% include 'sign_inout_buttons.html' %}
     </div>
    </div>
   </nav>
+  <div id="django-messages-div">
+   {% include 'messages.html' %}
+  </div>
   <header class="text-center text-white masthead" style='background: url({% static "accounts/img/pillars_of_creation.jpg" %}) center / cover repeat;height: 679px;'>
    <h1 class="mb-5" style="transform: translate(0px) translateX(0px) translateY(-122px);">
     Mathematicians can edit, save, and search for diagrams using this web app.

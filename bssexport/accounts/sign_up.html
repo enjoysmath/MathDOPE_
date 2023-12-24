@@ -16,16 +16,18 @@
 
 <body>
     <nav class="navbar navbar-expand-lg navigation-clean-button navbar-light" style="/*position: absolute;*/width: 100%;height: auto;max-height: auto;padding: 0px;">
-        <div class="container"><a class="navbar-brand bounce animated" href="/" style="font-family: 'Indie Flower', serif;color: var(--bs-indigo);font-size: xx-large;font-weight: bold;margin: 0px;padding: 0px;">Database Of Proofs Engine</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1" style="transform: scale(0.74);"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        <div class="container"><a class="navbar-brand" href="/" style="font-family: 'Indie Flower', serif;color: var(--bs-indigo);font-size: xx-large;font-weight: bold;margin: 0px;padding: 0px;">MathDOPE</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1" style="transform: scale(0.74);"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"></li>
                     <li class="nav-item"></li>
-                </ul>
-                <div class="btn-group" role="group" style="margin: 4px;border-radius: 10px;"><a class="btn btn-primary" role="button" id="sign-in-button" style="padding: 3px 6px;border-radius: 8px;" href="{% url 'sign_in' %}">Sign In</a></div>
+                </ul><a class="btn btn-primary" href="{% url 'user_home' %}" style="padding: 3px 6px;border-radius: 8px;margin: 4px;" dj-if="request.user.is_authenticated">My Home</a><a class="btn btn-primary" href="{% url 'sign_out' %}" style="padding: 3px 6px;border-radius: 8px;margin: 6px;" dj-include="sign_inout_buttons.html">Sign In/Out</a>
             </div>
         </div>
     </nav>
+    <div id="django-messages-div">
+        <div dj-include="messages.html"></div>
+    </div>
     <header class="text-center text-white masthead" style="background: url(&quot;/assets/img/accounts/pillars_of_creation.jpg&quot;) center / cover repeat;height: 679px;">
         <h1 class="mb-5" style="transform: translate(0px) translateX(0px) translateY(-122px);">Mathematicians can edit, save, and search for diagrams using this web app.</h1>
         <div class="col-xl-9 mx-auto position-relative" style="height: 110px;transform: translateY(-122px);"><button class="btn btn-primary" type="button" data-bs-target="#sign-up-modal" data-bs-toggle="modal" style="font-size: 18pt;border-radius: 16px;">Sign Me Up!<br></button></div>

@@ -15,10 +15,6 @@
   <link href='{% static "cd_editor/css/navbar.css" %}' rel="stylesheet"/>
  </head>
  <body>
-  <div id="django-messages-div">
-   <div id="IncludeDjangoTemplate-messages">
-   </div>
-  </div>
   <nav class="navbar navbar-expand-lg navigation-clean-button navbar-light" style="/*position: absolute;*/width: 100%;height: auto;max-height: auto;padding: 0px;">
    <div class="container-fluid">
     <a class="navbar-brand" href="/" style="font-family: 'Indie Flower', serif;color: var(--bs-indigo);font-weight: bold;padding: 0px;">
@@ -143,6 +139,9 @@
     </div>
    </div>
   </nav>
+  <div id="django-messages-div" style="position:absolute; width:100%">
+   {% include 'messages.html' %}
+  </div>
   {% include 'diagram_editor_include.html' %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js">
   </script>

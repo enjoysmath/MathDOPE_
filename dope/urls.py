@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from accounts.views import sign_up
+from accounts.views import register
 from .views import messages_, clear_messages
 
 urlpatterns = [
@@ -28,5 +28,5 @@ urlpatterns = [
     path('diagram-editor/', include('cd_editor.urls')),
     #path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
-    path('', sign_up),
+    path('', register),    
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -13,14 +13,15 @@ from dope.keyword import Keyword
 from database.neo4j_tools import neo4j_escape_regex_str 
 
     
-class QuiverArrow(StructuredRel):    
+class Arrow(StructuredRel):    
     # RE-DESIGN: TODO - these need to be independent of style and settable in an accompanying
     # panel to the editor.
     # These are the mathematical properties, that you can search by:
     #epic = BooleanProperty(default=False)
     #monic = BooleanProperty(default=False)
     #inclusion = BooleanProperty(default=False)
-    diagram_index = IntegerProperty(required=True)
+    name = StringProperty(max_length=MAX_ATOMIC_LATEX_LENGTH, default='')
+    diagram_index = IntegerProperty(required=True)    
     
     # Strictly style below this line:   
     NUM_LINES = { 1: 'one', 2: 'two', 3: 'three' }
@@ -38,7 +39,7 @@ class QuiverArrow(StructuredRel):
     tail_shorten = IntegerProperty(default=0)
     head_shorten = IntegerProperty(default=0)
     
-    TAIL_STYLE = {0:'none', 1:'mono', 2:'hook', 3:'arrowhead', 4:'maps_to'}
+    TAIL_STYLE = {0:'none', 1:'mono', 2:'hook', 3:'arrowhead', 4:'CONNECTS_TO'}
     tail_style = IntegerProperty(choices=TAIL_STYLE, default=0)
         
     SIDE = {0:'none', 1:'top', 2:'bottom'}
@@ -170,18 +171,17 @@ class QuiverArrow(StructuredRel):
     
     @property
     def target(self):
-        return QuiverNode.nodes.get_or_none(uid=self.target_uid)
+        return Object.nodes.get_or_none(uid=self.end_node().uid)
     
     @property
     def source(self):
-        return QuiverNode.nodes.get_or_none(uid=self.source_uid)
+        return Object.nodes.get_or_none(uid=self.start_node().uid)
 
 
-class QuiverNode(StructuredNode):
+class Object(StructuredNode):
     uid = UniqueIdProperty()
     name = StringProperty(max_length=MAX_ATOMIC_LATEX_LENGTH, required=True)
-    category = RelationshipTo('Category', 'LIVES_IN', cardinality=One)
-    maps_to = RelationshipTo('QuiverNode', 'MAPS_TO', model=QuiverArrow, cardinality=ZeroOrMore)    
+    CONNECTS_TO = RelationshipTo('Object', 'CONNECTS_TO', model=Arrow, cardinality=ZeroOrMore)    
     diagram_index = IntegerProperty(required=True)
 
     # Position & Color:
@@ -199,11 +199,11 @@ class QuiverNode(StructuredNode):
     
     @staticmethod
     def our_create(**kwargs):
-        ob = QuiverNode(**kwargs).save()
+        ob = Object(**kwargs).save()
         return ob
     
     #def copy(self, nodes_memo, **kwargs):
-        #copy = QuiverNode.our_create(**kwargs, diagram_index=self.diagram_index)
+        #copy = Object.our_create(**kwargs, diagram_index=self.diagram_index)
         #nodes_memo[copy.diagram_index] = copy
         #copy.name = self.name
         #copy.x = self.x
@@ -226,27 +226,31 @@ class QuiverNode(StructuredNode):
         #return copy    
     
     def __repr__(self):
-        return f'QuiverNode("{self.name}")'
+        return f'Object("{self.name}")'
     
     def all_outgoing_arrows(self):
-        results, meta = db.cypher_query(
-            f"MATCH (X:QuiverNode)-[r:MAPS_TO]->(:QuiverNode)"
-            f"MATCH (f:QuiverArrow) "
-            f"WHERE X.uid='{self.uid}' AND f.uid=r.uid "
-            f"RETURN f")
-        return [QuiverArrow.inflate(row[0]) for row in results]
+        query = \
+            f"MATCH (X:Object)-[r:CONNECTS_TO]->(:Object)" \
+            f"WHERE X.uid='{self.uid}' " \
+            f"RETURN r"
+        
+        results, meta = db.cypher_query(query)
+        
+        print("DEBUG/CYPHER QUERY: ", query)
+        
+        return [Arrow.inflate(row[0]) for row in results]
                     
     def delete(self):
         # Delete all the outgoing morphisms first:
-        db.cypher_query(f"MATCH (X:QuiverNode)-[r:MAPS_TO]->(:QuiverNode)"
-                        f"MATCH (f:QuiverArrow) "
+        db.cypher_query(f"MATCH (X:Object)-[r:CONNECTS_TO]->(:Object)"
+                        f"MATCH (f:Arrow) "
                         f"WHERE X.uid='{self.uid}' AND f.uid=r.uid DETACH DELETE f, r")  
         # TODO: see if we need to also delete r here ("DELETE r,f"), or whether the following automatically deletes it:
         super().delete()
            
     @staticmethod
     def create_from_editor(format, index:int):
-        o = QuiverNode(diagram_index=index)
+        o = Object(diagram_index=index)
         o.init_from_editor(format, index)
         return o
         
@@ -273,21 +277,17 @@ class QuiverNode(StructuredNode):
                 [self.color_hue, self.color_sat, self.color_lum, self.color_alph]]
         
         
-class QuiverDiagram(StructuredNode):  
+class Diagram(StructuredNode):  
     #"""
     #Models should be decouple (inheritance rarely used)
     #Otherwise basic seeming queries return all types in the hierarchy.
     #Hence just StructuredNode here.
     #"""
-    COMMUTES = { 'C' : 'Commutes', 'NC' : 'Noncommutative' }
-    
+   
     uid = UniqueIdProperty()
     name = StringProperty(required=True)
     checked_out_by = StringProperty(max_length=MAX_ATOMIC_LATEX_LENGTH)
-    objects = RelationshipTo('QuiverNode', 'CONTAINS', cardinality=ZeroOrMore)   
-    arrows = RelationshipTo('QuiverArrow', 'CONTAINS', cardinality=ZeroOrMore)
-    category = RelationshipTo('Category', 'LIVES_IN', cardinality=One)
-    commutes = StringProperty(choices=COMMUTES, default='C')
+    objects = RelationshipTo('Object', 'HAS_OBJECT', cardinality=ZeroOrMore)       
     
     def morphism_count(self):
         count = 0
@@ -296,7 +296,7 @@ class QuiverDiagram(StructuredNode):
         return count
     
     def copy(self, **kwargs):
-        copy = QuiverDiagram.our_create(**kwargs)
+        copy = Diagram.our_create(**kwargs)
         
         nodes_memo = {}
         
@@ -329,14 +329,14 @@ class QuiverDiagram(StructuredNode):
     
     @staticmethod
     def our_create(**kwargs):
-        diagram = QuiverDiagram(**kwargs).save()
-        QuiverDiagram.init_diagram(diagram)
+        diagram = Diagram(**kwargs).save()
+        Diagram.init_diagram(diagram)
         return diagram
         
     @staticmethod
     def init_diagram(diagram):
-        category = get_unique(Category, name=DEFAULT_CATEGORY_NAME)
-        diagram.category.connect(category)
+        #category = get_unique(Category, name=DEFAULT_CATEGORY_NAME)
+        #diagram.category.connect(category)
         diagram.save()  
         
     def quiver_format(self):
@@ -370,7 +370,7 @@ class QuiverDiagram(StructuredNode):
         for k,e in enumerate(edges):
             A = obs[e[0]]
             B = obs[e[1]]
-            f = A.maps_to.connect(B, {'diagram_index': k})
+            f = A.CONNECTS_TO.connect(B, {'diagram_index': k})
             f.save()
             f.load_from_editor(e)
             A.save()
@@ -380,7 +380,7 @@ class QuiverDiagram(StructuredNode):
     
     def all_objects(self):
         results, meta = db.cypher_query(
-            f'MATCH (D:QuiverDiagram)-[:CONTAINS]->(x:QuiverNode) WHERE D.uid="{self.uid}" RETURN x')
+            f'MATCH (D:Diagram)-[:HAS_OBJECT]->(x:Object) WHERE D.uid="{self.uid}" RETURN x')
         return [Object.inflate(row[0]) for row in results]
         
     def delete_objects(self):
@@ -396,8 +396,8 @@ class QuiverDiagram(StructuredNode):
     @staticmethod
     def get_paths_by_length(diagram_uid):
         paths_by_length = \
-            f"MATCH (D:Diagram)-[:CONTAINS]->(X:Node), " + \
-            f"p=(X)-[:MAPS_TO*]->(:Node) " + \
+            f"MATCH (D:Diagram)-[:HAS_OBJECT]->(X:Node), " + \
+            f"p=(X)-[:CONNECTS_TO*]->(:Node) " + \
             f"WHERE D.uid = '{diagram_uid}' " + \
             f"RETURN p " + \
             f"ORDER BY length(p) DESC" 
@@ -431,13 +431,13 @@ class QuiverDiagram(StructuredNode):
             add_query = ''
             
             for rel in path.relationships:
-                rel = QuiverArrow.inflate(rel)
-                #rel = get_model_by_uid(QuiverArrow, uid=rel.uid)
+                rel = Arrow.inflate(rel)
+                #rel = get_model_by_uid(Arrow, uid=rel.uid)
                 
                 if rel.diagram_index not in rels:
                     rels[rel.diagram_index] = rel
                     
-                    add_query += f"-[r{rel.diagram_index}:MAPS_TO]->"
+                    add_query += f"-[r{rel.diagram_index}:CONNECTS_TO]->"
                     next_node = rel.end_node()  # BUGFIX: no need to inflate here
                     add_query += f"(n{next_node.diagram_index}:Node)"
                     
@@ -508,16 +508,8 @@ class QuiverDiagram(StructuredNode):
         return template_regexes, query   
 
 
-class Diagram(QuiverDiagram):
-    @staticmethod
-    def our_create(**kwargs):
-        diagram = Diagram(**kwargs).save()
-        Diagram.init_diagram(diagram)
-        return diagram
 
-class Object(QuiverNode):
-    pass
-        
+
 class Category(StructuredNode):
     uid = UniqueIdProperty()
     name = StringProperty(required=True)
@@ -527,9 +519,22 @@ class Category(StructuredNode):
         category = Category(**kwargs).save()
         return category
 
-class Arrow(QuiverArrow):
-    pass        
 
+class DiagramProperty(StructuredNode):
+    diagram = RelationshipTo('Diagram', 'OF_DIAGRAM', cardinality=One)
+    
+    
+class CommutativityProperty(DiagramProperty):
+    COMMUTES = { 'NC' : 'Non-commutative', 'C' : 'Commutes',  'DNC': 'Does not commute'}
+    commutes = StringProperty(choices=COMMUTES, default='NC')
+        
+class LivesInCategory(DiagramProperty):
+    category = RelationshipTo('Category', 'LIVES_IN', cardinality=One)
+    
+
+class DiagramSet(StructuredNode):
+    diagrams = RelationshipTo('Diagram', 'CONTAINS', cardinality=ZeroOrMore)
+    
 
 class DiagramRule(Arrow):
     checked_out_by = StringProperty(max_length=MAX_ATOMIC_LATEX_LENGTH)
@@ -568,12 +573,12 @@ class DiagramRule(Arrow):
         if res is None:
             res = 'Result'
             
-        cat = get_unique(Category, name='Any')    
+        #cat = get_unique(Category, name='Any')    
         source = Diagram(name=key).save()
-        source.category.connect(cat)
+        #source.category.connect(cat)
         source.save()
         target = Diagram(name=res).save()
-        target.category.connect(cat)
+        #target.category.connect(cat)
         target.save()
         rule = DiagramRule(**kwargs)
         rule.save()
@@ -593,8 +598,21 @@ class DiagramRule(Arrow):
 
 
 
+ 
+class RuleSet(StructuredNode):
+    pass
+
+
+class Context(Object):
+    pass
+
+
+class Proof(Arrow):
+    pass
+
+
+
 model_str_to_class = {
-    'Category' : Category,
     'Object' : Object,
     'Diagram' : Diagram,
     'DiagramRule' : DiagramRule,

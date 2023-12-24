@@ -9,3 +9,8 @@ django-bootstrap5
 psycopg2
 gqlalchemy
 django-neomodel
+social-auth-app-django
+django-extensions
+werkzeug==2.2.2
+pyOpenSSL==23.0.0
+Pillow==9.2.0

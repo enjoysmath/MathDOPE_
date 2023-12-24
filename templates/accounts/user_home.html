@@ -18,7 +18,7 @@
   <nav class="navbar navbar-expand-lg navigation-clean-button navbar-light" style="/*position: absolute;*/width: 100%;height: auto;max-height: auto;padding: 0px;">
    <div class="container">
     <a class="navbar-brand" href="/" style="font-family: 'Indie Flower', serif;color: var(--bs-indigo);font-size: xx-large;font-weight: bold;margin: 0px;padding: 0px;">
-     Database Of Proofs Engine
+     MathDOPE
     </a>
     <button class="navbar-toggler" data-bs-target="#navcol-1" data-bs-toggle="collapse" style="transform: scale(0.74);">
      <span class="visually-hidden">
@@ -34,18 +34,28 @@
       <li class="nav-item">
       </li>
      </ul>
-     <div class="btn-group" role="group" style="margin: 4px;border-radius: 10px;">
-      <a class="btn btn-primary" href='{% static "accounts/sign-out" %}' id="sign-out-button" role="button" style="padding: 3px 6px;border-radius: 8px;">
-       Sign Out
-      </a>
-     </div>
+     {% if request.user.is_authenticated %}
+     <a class="btn btn-primary" href="{% url 'user_home' %}" style="padding: 3px 6px;border-radius: 8px;margin: 4px;">
+      My Home
+     </a>
+     {% endif %}
+     {% include 'sign_inout_buttons.html' %}
     </div>
    </div>
   </nav>
+  <div id="django-messages-div">
+   {% include 'messages.html' %}
+  </div>
   <header class="text-center text-white masthead" style='background: url({% static "accounts/img/pillars_of_creation.jpg" %}) center / cover repeat;height: 679px;max-height: none;padding: 0px;padding-top: 20px;'>
    <div class="card" style="min-width: auto;max-width: auto;width: 90%;margin: auto;border-radius: 15px;background: rgba(255,255,255,0.48);color: var(--bs-blue);">
-    <div class="card-body d-flex justify-content-end align-items-start align-self-start my-auto" style="width: auto;max-width: auto;color: var(--bs-blue);min-width: auto;padding: auto;">
-     <a class="btn btn-primary" href="{% url 'create_diagram' %}" id="create-diagram-button" method="get" role="button">
+    <div class="card-body d-inline-block justify-content-end align-items-start align-self-start flex-wrap my-auto" style="width: auto;max-width: auto;color: var(--bs-blue);min-width: auto;padding: auto;">
+     <a class="btn btn-primary" href="{% url 'create_diagram' %}" id="create-diagram-button" method="get" role="button" style="margin: 5px;">
+      Create Diagram
+     </a>
+     <a class="btn btn-primary" href="{% url 'edit_profile' %}" id="edit-account-button" method="get" role="button" style="margin: 5px;">
+      Edit Account
+     </a>
+     <a class="btn btn-primary" href="{% url 'create_diagram' %}" id="create-diagram-button-2" method="get" role="button" style="margin: 5px;">
       Create Diagram
      </a>
     </div>

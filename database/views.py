@@ -24,19 +24,19 @@ def create_diagram(request):
         
             if 0 < len(diagram_name) <= MAX_ATOMIC_LATEX_LENGTH:               
                 diagram = call_with_retry(Diagram.nodes.get_or_none, name=diagram_name)
+                
+                if diagram is None:
+                    diagram = Diagram.our_create(
+                        name=diagram_name, checked_out_by=request.user.username)
+                    
+                    return redirect('diagram_editor', diagram_name)
+                else:
+                    error_msg = 'A diagram by that name already exists.'                
             else:
                 if len(diagram_name) == 0:
                     error_msg = 'A diagram name must be non-empty.'
                 elif len(diagram_name) > MAX_ATOMIC_LATEX_LENGTH:
                     error_msg = f'A diagram name can be no longer than {MAX_ATOMIC_LATEX_LENGTH} characters.'                
-            
-            if diagram is None:
-                diagram = Diagram.our_create(
-                    name=diagram_name, checked_out_by=request.user.username)
-                
-                return redirect('diagram_editor', diagram_name)
-            else:
-                error_msg = 'A diagram by that name already exists.'
         else:
             error_msg = None
             
@@ -99,31 +99,31 @@ def set_model_string(request, Model:str, field:str):
 
 
 
-@login_required   
-#@user_passes_test(is_editor)
-def set_diagram_category(request):
-    try:                        
-        diagram = get_model_by_uid(Diagram, uid=request.POST['pk'])
+#@login_required   
+##@user_passes_test(is_editor)
+#def set_diagram_category(request):
+    #try:                        
+        #diagram = get_model_by_uid(Diagram, uid=request.POST['pk'])
         
-        if diagram.checked_out_by != request.user.username:
-            raise OperationalError(f'The {Model} is not checked out by you.')
+        #if diagram.checked_out_by != request.user.username:
+            #raise OperationalError(f'The {Model} is not checked out by you.')
                
-        category_name = get_posted_text(request).strip()
+        #category_name = get_posted_text(request).strip()
         
-        if category_name == '':
-            raise Exception(f'Category name cannot be empty.')       
+        #if category_name == '':
+            #raise Exception(f'Category name cannot be empty.')       
     
-        category = diagram.category.single()
+        #category = diagram.category.single()
     
-        if category_name != category.name:
-            new_category = get_unique(Category, name=category_name)
-            diagram.category.reconnect(category, new_category)
-            diagram.save()
+        #if category_name != category.name:
+            #new_category = get_unique(Category, name=category_name)
+            #diagram.category.reconnect(category, new_category)
+            #diagram.save()
             
-        return JsonResponse({'success': True})
+        #return JsonResponse({'success': True})
         
-    except Exception as e:
-        return JsonResponse({'success': False, 'error_msg': f'{full_qualname(e)}: {e}'})
+    #except Exception as e:
+        #return JsonResponse({'success': False, 'error_msg': f'{full_qualname(e)}: {e}'})
     
     
     
